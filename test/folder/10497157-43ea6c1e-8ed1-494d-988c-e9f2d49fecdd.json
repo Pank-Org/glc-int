@@ -181,53 +181,6 @@
 				"description": "If all the users were created successfully, then this request reports the successful results.\n\nYou can also use the [Slack API](https://www.postman.com/slackhq/workspace/slack-api/collection/13509546-993e3b18-d277-4189-8ce5-af45df38e336), [Twilio API](https://postman.com/twilio/workspace/twilio-api/collection/12503610-194919ce-e80b-44da-8eec-45ea8e74cdfb?ctx=documentation), or the [MessageBird API](https://www.postman.com/messagebird-official/workspace/messagebird-official/collection/7989812-9fcde03c-9cfb-4293-95ea-81f53d244e75) to get notified in case of success or failure."
 			},
 			"response": []
-		},
-		{
-			"name": "Report failed user creation",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"id": "10497157-a72393f3-80c1-4c16-b2de-ef2dbe8ff41c",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"message\": \"{{results}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{failureAPIUrl}}",
-					"host": [
-						"{{failureAPIUrl}}"
-					]
-				},
-				"description": "If there was any failure in creating a user, this request reports the failed attempt."
-			},
-			"response": []
 		}
 	],
 	"event": [
