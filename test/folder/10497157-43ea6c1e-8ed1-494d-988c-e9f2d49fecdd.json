@@ -117,7 +117,7 @@
 					"raw": "{\n    \"username\": \"{{username}}\",\n    \"name\": \"{{name}}\",\n    \"role\": \"{{role}}\"\n}",
 					"options": {
 						"raw": {
-							"language": "text"
+							"language": "json"
 						}
 					}
 				},
