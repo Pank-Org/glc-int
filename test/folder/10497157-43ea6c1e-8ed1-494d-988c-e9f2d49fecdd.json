@@ -12,6 +12,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
+						"id": "d1153eb5-2a7e-4026-b2dc-eadea84f8b18",
 						"exec": [
 							"// Parse the data from the variables",
 							"const jsonUsers = JSON.parse(pm.collectionVariables.get(\"users\"));",
@@ -34,12 +35,14 @@
 							"}",
 							""
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				},
 				{
 					"listen": "test",
 					"script": {
+						"id": "ea1d1191-165a-4354-ad49-43d1aa732c69",
 						"exec": [
 							"const results = JSON.parse(pm.collectionVariables.get(\"results\"));",
 							"const username = pm.collectionVariables.get(\"username\");",
@@ -100,7 +103,8 @@
 							"}",
 							""
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -113,7 +117,7 @@
 					"raw": "{\n    \"username\": \"{{username}}\",\n    \"name\": \"{{name}}\",\n    \"role\": \"{{role}}\"\n}",
 					"options": {
 						"raw": {
-							"language": "json"
+							"language": "text"
 						}
 					}
 				},
