@@ -138,7 +138,7 @@
 			"response": [
 				{
 					"id": "10497157-45b1e707-de8d-4cb9-be15-c09982c98288",
-					"name": "Create users based on an array of data",
+					"name": "example rename",
 					"originalRequest": {
 						"method": "POST",
 						"header": [],
