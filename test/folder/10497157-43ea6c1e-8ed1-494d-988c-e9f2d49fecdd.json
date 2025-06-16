@@ -122,14 +122,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://postman-echo.com/post",
+					"raw": "http://postman-echo.com/post/123",
 					"protocol": "http",
 					"host": [
 						"postman-echo",
 						"com"
 					],
 					"path": [
-						"post"
+						"post",
+						"123"
 					]
 				},
 				"description": "This request creates a new user. It runs as many times as the number of elements in the data array.\n\nThe pre-request script sets the current user information in a variable and then uses that variable in the request body.\n\nThe post-response script takes care of storing the response and branching the execution based on the success of the request."
