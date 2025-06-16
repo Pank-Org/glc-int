@@ -292,45 +292,37 @@
 	],
 	"variable": [
 		{
-			"id": "70319083-6029-49dc-a3fb-f4380fbb3029",
 			"key": "users",
 			"value": "[{\"username\": \"flash\",\"name\": \"Barry Allen\",\"role\": \"Superhero\"},{\"username\": \"wonder_woman\",\"name\": \"Diana Prince\",\"role\":\"Superhero\"},{\"username\": \"batman\",\"name\": \"Bruce Wayne\",\"role\": \"Superhero\"}]"
 		},
 		{
-			"id": "8dd992e5-4de7-4294-b5b5-347a510d1e03",
 			"key": "results",
 			"value": "[]",
 			"type": "string"
 		},
 		{
-			"id": "c1d49694-6e70-44b2-964a-750d05938e4e",
 			"key": "successAPIUrl",
 			"value": "https://postman-echo.com/post",
 			"type": "string"
 		},
 		{
-			"id": "d16934f2-a95d-4fbf-ac99-5737bfe5f6bf",
 			"key": "failureAPIUrl",
 			"value": "https://postman-echo.com/post",
 			"type": "string"
 		},
 		{
-			"id": "60b6c904-d96e-4e1b-a141-5de13b5a6125",
 			"key": "idx",
 			"value": "0"
 		},
 		{
-			"id": "0f3f00c8-b30d-4c07-9b0d-d4fc3de15889",
 			"key": "username",
 			"value": ""
 		},
 		{
-			"id": "18035bd1-2670-43ff-9c8e-759fa36d7e13",
 			"key": "name",
 			"value": ""
 		},
 		{
-			"id": "b22e9e6e-390c-42c4-a138-1199c61dfb0b",
 			"key": "role",
 			"value": ""
 		}
