@@ -268,6 +268,89 @@
 				"description": "If there was any failure in creating a user, this request reports the failed attempt."
 			},
 			"response": []
+		},
+		{
+			"name": "Postman Echo Basic Auth",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "d1153eb5-2a7e-4026-b2dc-eadea84f8b18",
+						"exec": [
+							"// Set Basic Authentication header",
+							"const username = 'postman';",
+							"const password = 'password';",
+							"const base64Credentials = btoa(`${username}:${password}`);",
+							"pm.request.headers.add({",
+							"    key: 'Authorization',",
+							"    value: `Basic ${base64Credentials}`",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "ea1d1191-165a-4354-ad49-43d1aa732c69",
+						"exec": [
+							"// Test authentication",
+							"pm.test(\"Authentication is successful\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    ",
+							"    // Check response body for authentication confirmation",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.authenticated).to.be.true;",
+							"});",
+							"",
+							"// Test the credentials",
+							"pm.test(\"Correct credentials used\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.user).to.equal(\"postman\");",
+							"});",
+							"",
+							"// Response time test",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"// Validate JSON structure",
+							"pm.test(\"Response is a valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"    pm.response.to.have.jsonBody();",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "10497157-f033d6fb-8472-4ae5-a7d4-7c11ea411223",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic cG9zdG1hbjpwYXNzd29yZA=="
+					}
+				],
+				"url": {
+					"raw": "https://postman-echo.com/basic-auth",
+					"protocol": "https",
+					"host": [
+						"postman-echo",
+						"com"
+					],
+					"path": [
+						"basic-auth"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
