@@ -164,11 +164,18 @@
 							]
 						}
 					},
-					"_postman_previewlanguage": null,
-					"header": null,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json",
+							"description": "",
+							"type": "text"
+						}
+					],
 					"cookie": [],
 					"responseTime": null,
-					"body": null
+					"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": \"12345\",\n        \"username\": \"john_doe\",\n        \"name\": \"John Doe\",\n        \"role\": \"admin\",\n        \"created_at\": \"2023-10-01T12:00:00Z\",\n        \"updated_at\": \"2023-10-01T12:00:00Z\"\n    }\n}"
 				}
 			]
 		},
