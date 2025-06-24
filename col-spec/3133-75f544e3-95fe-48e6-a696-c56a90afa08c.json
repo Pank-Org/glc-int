@@ -38,7 +38,7 @@
 									"variable": [
 										{
 											"key": "spacecraftId",
-											"value": "nisi consequat",
+											"value": "nisi",
 											"description": "(Required) The unique identifier of the spacecraft"
 										}
 									]
@@ -88,7 +88,7 @@
 									],
 									"cookie": [],
 									"responseTime": null,
-									"body": "{\n  \"id\": \"sunt sint veniam consectet\",\n  \"name\": \"fugiat cupi\",\n  \"type\": \"capsule\",\n  \"description\": \"ullamco adipisicing in\"\n}"
+									"body": "{\n  \"id\": \"esse adipisicing\",\n  \"name\": \"veniam\",\n  \"type\": \"satellite\",\n  \"description\": \"aliquip eiusmod\"\n}"
 								},
 								{
 									"id": "3133-3ddff9f3-1cf4-4991-ab17-9f837e399112",
@@ -133,7 +133,7 @@
 									],
 									"cookie": [],
 									"responseTime": null,
-									"body": "{\n  \"message\": \"id et laborum\"\n}"
+									"body": "{\n  \"message\": \"officia ea aliqua\"\n}"
 								},
 								{
 									"id": "3133-c23e49c7-d91a-4b0d-a14b-85651d1884dc",
@@ -178,7 +178,7 @@
 									],
 									"cookie": [],
 									"responseTime": null,
-									"body": "{\n  \"message\": \"id et laborum\"\n}"
+									"body": "{\n  \"message\": \"officia ea aliqua\"\n}"
 								}
 							]
 						}
@@ -219,7 +219,6 @@
 									],
 									"variable": [
 										{
-											"id": "048659e0-424f-4230-beb7-cff2c8e49319",
 											"key": "spacecraftId",
 											"value": "cupidatat Ut irure",
 											"description": "(Required) The unique identifier of the spacecraft"
