@@ -1236,6 +1236,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "d212118b-9944-4eb3-89bf-ae65765f6c3d",
 								"exec": [
 									"try {",
 									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
@@ -1269,8 +1270,7 @@
 									"@postman/api-builder-request-retry-script": {
 										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
 									}
-								},
-								"id": "d212118b-9944-4eb3-89bf-ae65765f6c3d"
+								}
 							}
 						}
 					],
