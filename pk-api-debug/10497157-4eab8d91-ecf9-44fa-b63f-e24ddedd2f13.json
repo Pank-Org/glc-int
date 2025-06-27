@@ -1,0 +1,2041 @@
+{
+	"info": {
+		"_postman_id": "10497157-4eab8d91-ecf9-44fa-b63f-e24ddedd2f13",
+		"name": "[Monitor] [Sanity] API Specification service",
+		"description": "Debugging steps if you see failures in this reported via the monitors:\n\n[https://whimsical.com/triage-monitor-failures-868kMPybZfPsAxrrT8NF62](https://whimsical.com/triage-monitor-failures-868kMPybZfPsAxrrT8NF62)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create & fetch spec",
+			"item": [
+				{
+					"name": "Create Spec",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e0c030b3-eda0-4933-8e4e-1b08de17bc7a",
+								"exec": [
+									"try {",
+									"    const {retryOnFailure} = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 201\", function () {",
+									"        pm.response.to.have.status(201);",
+									"    });",
+									"",
+									"    if (pm.response.code !== 201)  {",
+									"        throw 'StatusCode: ' + pm.response.code;",
+									"    }",
+									"",
+									"    pm.test(\"Response is an object with meta and data properties\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.be.an('object');",
+									"        pm.expect(jsonData).to.have.property('meta');",
+									"        pm.expect(jsonData).to.have.property('data');",
+									"    });",
+									"",
+									"    pm.test(\"Schema is valid\", function () {",
+									"        var schema = {",
+									"            type: \"object\",",
+									"            properties: {",
+									"                meta: {",
+									"                    type: \"object\",",
+									"                    properties: {",
+									"                        action: { type: \"string\" },",
+									"                        model: { type: \"string\" }",
+									"                    }",
+									"                },",
+									"                data: {",
+									"                    type: \"object\",",
+									"                    properties: {",
+									"                        id: { type: \"string\" },",
+									"                        name: { type: \"string\" },",
+									"                        type: { type: \"string\" },",
+									"                        createdBy: { type: \"string\" },",
+									"                        updatedBy: { type: \"string\" },",
+									"                        description: { type: \"string\" },",
+									"                        updatedAt: { type: \"string\" },",
+									"                        createdAt: { type: \"string\" }",
+									"                    },",
+									"                    required: [\"id\", \"name\", \"type\", \"createdBy\", \"updatedBy\", \"description\", \"updatedAt\", \"createdAt\"]",
+									"                }",
+									"            },",
+									"            required: [\"meta\", \"data\"]",
+									"        };",
+									"",
+									"        var response = pm.response.json();",
+									"        pm.expect(tv4.validate(response, schema)).to.be.true;",
+									"",
+									"        // set spec Id",
+									"        pm.environment.set(\"specificationId1\", response.data.id);",
+									"",
+									"        console.log('Specification ID:', response.data.id);",
+									"    });",
+									"",
+									"    // Retrieve the saved \"id\" value from the variable",
+									"    pm.test(\"Validate response against saved 'id' value\", function () {",
+									"        var savedName = \"Spec1\";",
+									"        var savedType = \"OPENAPI:3.0\";",
+									"        var responseBody = pm.response.json();",
+									"        var { name, type } = responseBody.data;",
+									"",
+									"        pm.expect(name).to.equal(savedName);",
+									"        pm.expect(type).to.equal(savedType);",
+									"    });",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"",
+									"    pm.execution.setNextRequest(null);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "921793ba-33fc-4ba1-bdec-3e51880e0772",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-a90eaf0b-6a62-4296-905d-fff9723c66cf",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"post\",\n    \"path\": \"/specifications\",\n    \"query\": {\n        \"containerType\": \"workspace\",\n        \"containerId\": \"{{workspaceId}}\"\n    },\n    \"body\": {\n        \"name\": \"Spec1\",\n        \"description\": \"this is a demo API\",\n        \"type\": \"OPENAPI:3.0\",\n        \"files\": [\n            {\n                \"path\": \"index.yml\",\n                \"content\": \"openapi: '3.0.0'\\ninfo:\\n  version: '1.0.0'\\n  title: 'Sample API'\\n  description: Buy or rent spacecrafts\\n\\npaths:\\n  /spacecrafts/{spacecraftId}:\\n    parameters:\\n      - name: spacecraftId\\n        description: The unique identifier of the spacecraft\\n        in: path\\n        required: true\\n        schema:\\n          $ref: '#/components/schemas/SpacecraftId'\\n    get:\\n      summary: Read a spacecraft\\n      responses:\\n        '200':\\n          description: The spacecraft corresponding to the provided spacecraftId\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Spacecraft'\\n        404:\\n          description: No spacecraft found for the provided spacecraftId\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Error'\\n        500:\\n          description: Unexpected error\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Error'\\ncomponents:\\n  schemas:\\n    SpacecraftId:\\n      description: The unique identifier of a spacecraft\\n      type: string\\n    Spacecraft:\\n      type: object\\n      required:\\n        - id\\n        - name\\n        - type\\n      properties:\\n        id:\\n          $ref: '#/components/schemas/SpacecraftId'\\n        name:\\n          type: string\\n        type:\\n          type: string\\n          enum:\\n            - capsule\\n            - probe\\n            - satellite\\n            - spaceplane\\n            - station\\n        description:\\n          type: string\\n    Error:\\n      type: object\\n      required:\\n        - message\\n      properties:\\n        message:\\n          description: A human readable error message\\n          type: string\\n  securitySchemes:\\n    ApiKey:\\n      type: apiKey\\n      in: header\\n      name: X-Api-Key\\nsecurity:\\n  - ApiKey: []\",\n                \"type\": \"ROOT\"\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Specs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c4d953f2-d1ff-42b4-b556-a6412fcb3803",
+								"exec": [
+									"const Ajv = require('ajv');",
+									"",
+									"try {",
+									"    const {retryOnFailure} = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Schema is valid\", function () {",
+									"        console.log(pm.response.json());",
+									"        var schema = {",
+									"            type: \"object\",",
+									"            properties: {",
+									"                meta: {",
+									"                    type: \"object\",",
+									"                    properties: {",
+									"                        action: { type: \"string\" },",
+									"                        model: { type: \"string\" },",
+									"                        cursor: {",
+									"                            type: \"object\",",
+									"                            properties: {",
+									"                                next: { type: [\"string\", \"null\"] }",
+									"                            },",
+									"                            required: [\"next\"]",
+									"                        }",
+									"                    },",
+									"                    required: [\"action\", \"model\", \"cursor\"]",
+									"                },",
+									"                data: {",
+									"                    type: \"array\",",
+									"                    items: {",
+									"                        type: \"object\",",
+									"                        properties: {",
+									"                            id: { type: \"string\" },",
+									"                            type: { type: \"string\" },",
+									"                            name: { type: \"string\" },",
+									"                            description: { type: [\"string\", \"null\"]},",
+									"                            createdBy: { type: \"string\" },",
+									"                            updatedBy: { type: \"string\" },",
+									"                            createdAt: { type: \"string\" },",
+									"                            updatedAt: { type: \"string\" }",
+									"                        },",
+									"                        required: [\"id\", \"type\", \"name\", \"description\", \"createdBy\", \"updatedBy\", \"createdAt\", \"updatedAt\"]",
+									"                    }",
+									"                }",
+									"            },",
+									"            required: [\"meta\", \"data\"]",
+									"        };",
+									"",
+									"        var response = pm.response.json();",
+									"        const validator = new Ajv({logger: console, allErrors: true});",
+									"        console.log(validator.validate(schema, response), validator.errors)",
+									"        pm.expect(validator.validate(schema, response)).to.be.true;",
+									"    });",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-5ad49237-64ee-4462-82e2-5e2f61290203",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications\",\n    \"query\": {\n        \"containerType\": \"workspace\",\n        \"containerId\": \"{{workspaceId}}\",\n        \"limit\": 10\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							],
+							"query": [
+								{
+									"key": "cursor",
+									"value": "eyJvcmRlckJ5IjpbeyJwaXZvdCI6ImNyZWF0ZWRBdCIsInNjaGVtZSI6IkRFU0MiLCJ2YWx1ZSI6IjIwMjQtMDItMjNUMTI6MzQ6MzQuMDAwWiJ9LHsicGl2b3QiOiJpZCIsInNjaGVtZSI6IkRFU0MiLCJ2YWx1ZSI6ImI5ZGExZWI4LTIzMjUtNDEzOS1iM2Y2LWE3NjQ5MDNlMTNlOCJ9XSwiZGlyZWN0aW9uIjoibmV4dCJ9",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List One Spec",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ed70eda6-15b6-4210-90ed-81cdee9022a9",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Response is an object with meta and data properties\", function () {",
+									"            var jsonData = pm.response.json();",
+									"            pm.expect(jsonData).to.be.an('object');",
+									"            pm.expect(jsonData).to.have.property('meta');",
+									"            pm.expect(jsonData).to.have.property('data');",
+									"        });",
+									"",
+									"    pm.test(\"Schema is valid\", function () {",
+									"        var schema = {",
+									"            type: \"object\",",
+									"            properties: {",
+									"                meta: {",
+									"                    type: \"object\",",
+									"                    properties: {",
+									"                        action: { type: \"string\" },",
+									"                        model: { type: \"string\" }",
+									"                    }",
+									"                },",
+									"                data: {",
+									"                    type: \"object\",",
+									"                    properties: {",
+									"                        id: { type: \"string\" },",
+									"                        name: { type: \"string\" },",
+									"                        type: { type: \"string\" },",
+									"                        createdBy: { type: \"string\" },",
+									"                        updatedBy: { type: \"string\" },",
+									"                        description: { type: \"string\" },",
+									"                        updatedAt: { type: \"string\" },",
+									"                        createdAt: { type: \"string\" }",
+									"                    },",
+									"                    required: [\"id\", \"name\", \"type\", \"createdBy\", \"updatedBy\", \"description\", \"updatedAt\", \"createdAt\"]",
+									"                }",
+									"            },",
+									"            required: [\"meta\", \"data\"]",
+									"        };",
+									"",
+									"        var response = pm.response.json();",
+									"        pm.expect(tv4.validate(response, schema)).to.be.true;",
+									"    });",
+									"",
+									"    pm.test(\"Validate response against saved 'id' value\", function () {",
+									"        var savedId = pm.environment.get(\"specificationId1\");",
+									"",
+									"        var responseBody = pm.response.json(),",
+									"            responseId = responseBody.data.id;",
+									"",
+									"        pm.expect(responseId).to.be.eql(savedId);",
+									"    });",
+									"",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-cf52a0e2-0121-4874-89b1-2aae8a4f322f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}\",\n    \"query\": {\n        \"containerType\": \"workspace\",\n        \"containerId\": \"{{workspaceId}}\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch tree",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "447e63c2-cc96-4f0e-ac10-0f3e8c7e5aff",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Response has the required meta object\", function () {",
+									"        const responseData = pm.response.json();",
+									"",
+									"        pm.expect(responseData).to.be.an('object');",
+									"        pm.expect(responseData.meta).to.exist.and.to.be.an('object');",
+									"        pm.expect(responseData.meta.action).to.exist;",
+									"        pm.expect(responseData.meta.model).to.exist;",
+									"        pm.expect(responseData.meta.cursor).to.exist.and.to.be.an('object');",
+									"    });",
+									"",
+									"",
+									"    pm.test(\"Each data object contains the required fields\", function () {",
+									"        const responseData = pm.response.json();",
+									"",
+									"        pm.expect(responseData.data).to.be.an('array');",
+									"",
+									"        responseData.data.forEach(function (dataObj) {",
+									"            pm.expect(dataObj).to.include.all.keys('content', 'path', 'name', 'id', 'fileType', 'type');",
+									"        });",
+									"    });",
+									"",
+									"",
+									"    pm.test(\"Cursor object contains a next property\", function () {",
+									"        const responseData = pm.response.json();",
+									"",
+									"        pm.expect(responseData.meta.cursor).to.exist;",
+									"        pm.expect(responseData.meta.cursor.next).to.be.null;",
+									"    });",
+									"",
+									"",
+									"    pm.test(\"File type is in a valid format\", function () {",
+									"        const responseData = pm.response.json();",
+									"",
+									"        pm.expect(responseData).to.be.an('object');",
+									"        responseData.data.forEach(function (item) {",
+									"            pm.expect(item.fileType).to.match(/[a-zA-Z]+/, \"File type should be a valid format\");",
+									"        });",
+									"",
+									"        // save file id for update file API",
+									"        const fileId = responseData.data[0].id;",
+									"        pm.environment.set(\"fileId\", fileId);",
+									"    });",
+									"} catch (err) {",
+									"    console.log('Error:', err);",
+									"    console.log('Response Body', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-9adedc9e-8eb6-42de-b7a5-f92d3bff2f3e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/tree\",\n    \"query\": {\n        \"fields\": \"content,path,name,id,fileType,type\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-3bd191ec-7154-4cd8-be64-a5679ef0e4ef"
+		},
+		{
+			"name": "Collection generation",
+			"item": [
+				{
+					"name": "Generate collection",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f7f2bc44-9953-4f44-954e-b8c4669d540c",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 202\", function () {",
+									"        pm.response.to.have.status(202);",
+									"    });",
+									"",
+									"",
+									"    if (pm.response.code !== 202)  {",
+									"        throw 'StatusCode: ' + pm.response.code;",
+									"    }",
+									"",
+									"    pm.test(\"Response has the required fields - 'meta' and 'data'\", function () {",
+									"        const responseData = pm.response.json();",
+									"        ",
+									"        pm.expect(responseData).to.be.an('object');",
+									"        pm.expect(responseData).to.have.property('meta');",
+									"        pm.expect(responseData).to.have.property('data');",
+									"    });",
+									"",
+									"",
+									"    pm.test(\"TaskId in the response data is a non-empty string\", function () {",
+									"        const responseData = pm.response.json();",
+									"        ",
+									"        pm.expect(responseData.data.taskId).to.be.a('string').and.to.have.lengthOf.at.least(1, \"TaskId should be a non-empty string\");",
+									"",
+									"        pm.environment.set(\"taskId\", responseData.data.taskId);",
+									"    });",
+									"",
+									"",
+									"    pm.test(\"Content type is application/json\", function () {",
+									"        pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"    });",
+									"    ",
+									"",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"    pm.execution.setNextRequest('Add folder');",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-78201841-af16-4402-9177-5cc2011d7ade",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"post\",\n    \"path\": \"/specifications/{{specificationId1}}/collections\",\n    \"body\": {\n        \"name\": \"C1\",\n        \"options\": {\n            \"enableOptionalParameters\": true,\n            \"folderStrategy\": \"Tags\"\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List generation task status - until finished",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ae0f1c5c-debc-43ad-8a71-f7639efa071b",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Generation is successful\", function () {",
+									"        var response = pm.response.json();",
+									"        pm.expect(response).to.have.property('meta');",
+									"        pm.expect(response).to.have.property('data');",
+									"        pm.expect(response.meta).to.be.an('object').that.has.property('model').is.equal('Task');",
+									"        pm.expect(response.meta).to.be.an('object').that.has.property('action').is.equal('list');",
+									"        pm.expect(response.data).to.be.an('object').that.has.property(pm.environment.get('taskId'));",
+									"",
+									"        const currentRetryCount = Number(pm.environment.get('generationStatusRetryCount'));",
+									"",
+									"        console.log('retryCount',currentRetryCount );",
+									"",
+									"        if ( currentRetryCount > 5) {",
+									"            console.log('Exceeded retries');",
+									"",
+									"            throw 'Exceeded retries';",
+									"        } else if (response.data[pm.environment.get('taskId')] === 'in-progress') {",
+									"            pm.environment.set('generationStatusRetryCount', currentRetryCount + 1);",
+									"",
+									"            pm.execution.setNextRequest('List generation task status - until finished');",
+									"        } else if (response.data[pm.environment.get('taskId')] === 'failed') {",
+									"            throw 'Status: failed';",
+									"        }",
+									"    });",
+									"} catch (err) {",
+									"    console.log('Error:', err);",
+									"    console.log('Response Body', pm.response.text());",
+									"    ",
+									"    pm.execution.setNextRequest('Add folder');",
+									"} finally {",
+									"    pm.environment.set('generationStatusRetryCount', 0);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "0777cb42-275d-4ae0-949f-8b1514a863b1",
+								"exec": [
+									"setTimeout(function() {}, 1000);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-8f565dde-557e-45ee-a4c2-b6a4e2e65476",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/tasks?entityId={{specificationId1}}&entityType=specification&type=collection-generation\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						},
+						"description": "Assert task staus to be successful"
+					},
+					"response": []
+				},
+				{
+					"name": "List generated collections",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8c1e79e9-a144-4059-9c6f-1224782e69ee",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Response status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Success response\", function () {",
+									"        var response = pm.response.json();",
+									"        pm.expect(response).to.have.property('meta');",
+									"        pm.expect(response.meta).to.have.property('cursor');",
+									"        pm.expect(response.meta.cursor).to.have.property('next');",
+									"",
+									"        pm.expect(response).to.have.property('data');",
+									"        pm.expect(response.meta).to.be.an('object').that.has.property('model');",
+									"        pm.expect(response.meta).to.be.an('object').that.has.property('action');",
+									"        pm.expect(response.data).to.be.an('array').that.has.length(1);",
+									"",
+									"        pm.expect(response.data[0]).to.be.an('object').that.has.property('state').is.equal('in-sync');",
+									"",
+									"        // Set the collectionId as variable",
+									"        pm.environment.set('collectionId', response.data[0].collection);",
+									"    });",
+									"} catch (err) {",
+									"    console.log('Error:', err);",
+									"    console.log('Response Body', pm.response.text());",
+									"    pm.execution.setNextRequest('Add folder');",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-17379628-281a-4c85-a897-6290f61e27e7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/collections\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-3248b34f-ab08-4a70-910a-52dae625dcc4"
+		},
+		{
+			"name": "File & Folder create,update",
+			"item": [
+				{
+					"name": "Add folder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "dff84384-f6a5-40fc-9719-1fd4a46bdd8a",
+								"exec": [
+									"try {    ",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 201\", function () {",
+									"        pm.response.to.have.status(201);",
+									"    });",
+									"",
+									"    if (pm.response.code !== 201)  {",
+									"        throw 'StatusCode: ' + pm.response.code;",
+									"    }",
+									"",
+									"    pm.test('Response body is valid', function () {",
+									"        const jsonData = pm.response.json();",
+									"",
+									"        pm.expect(jsonData).to.be.an('object');",
+									"        pm.expect(jsonData).to.have.all.keys(['meta', 'data']);",
+									"    });",
+									"",
+									"    pm.test(\"Response body.meta is valid\", function () {",
+									"        const jsonData = pm.response.json();",
+									"",
+									"        pm.expect(jsonData.meta).to.be.an('object');",
+									"        pm.expect(jsonData.meta).to.have.property('model', 'SpecificationFolder');",
+									"        pm.expect(jsonData.meta).to.have.property('action', 'create');",
+									"    });",
+									"",
+									"    pm.test(\"Response body.data is valid\", function () {",
+									"        var jsonData = pm.response.json();",
+									"",
+									"        pm.expect(jsonData.data).to.be.an('object');",
+									"        pm.expect(jsonData.data).to.have.all.keys(['id', 'name', 'createdBy', 'updatedBy', 'createdAt', 'updatedAt']);",
+									"",
+									"        pm.environment.set(\"spec1FolderId1\", jsonData.data.id);",
+									"    });",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-6c998dfa-4093-4171-99b8-3ac125af8fb9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"post\",\n    \"path\": \"/specifications/{{specificationId1}}/folders\",\n    \"body\": {\n        \"name\": \"folder1\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update folder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "131f6edb-e511-4533-bf1e-a36b557eced4",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test('Response body is valid', function () {",
+									"        const jsonData = pm.response.json();",
+									"",
+									"        pm.expect(jsonData).to.be.an('object');",
+									"        pm.expect(jsonData).to.have.all.keys(['meta', 'data']);",
+									"    });",
+									"",
+									"    pm.test(\"Response body.meta is valid\", function () {",
+									"        const jsonData = pm.response.json();",
+									"",
+									"        pm.expect(jsonData.meta).to.be.an('object');",
+									"        pm.expect(jsonData.meta).to.have.property('model', 'SpecificationFolder');",
+									"        pm.expect(jsonData.meta).to.have.property('action', 'patch');",
+									"    });",
+									"",
+									"    pm.test(\"Response body.data is valid\", function () {",
+									"        var jsonData = pm.response.json();",
+									"",
+									"        pm.expect(jsonData.data).to.be.an('object');",
+									"        pm.expect(jsonData.data).to.have.all.keys('id');",
+									"    });",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-08e22d27-0c2c-4814-857b-0fb1fcf3d2bb",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"patch\",\n    \"path\": \"/specifications/{{specificationId1}}/folders/{{spec1FolderId1}}\",\n    \"body\": [\n        {\n            \"op\": \"replace\",\n            \"path\": \"/name\",\n            \"value\": \"folder1Updated\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add file",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3c9ac879-53ce-41ab-8f0b-897fd3c9c2cb",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    if (pm.response.code !== 201) {",
+									"        throw 'StatusCode: ' + pm.response.code;",
+									"    }",
+									"",
+									"    pm.test(\"Schema is valid\", function () {",
+									"        var schema = {",
+									"            type: \"object\",",
+									"            properties: {",
+									"                meta: {",
+									"                    type: \"object\",",
+									"                    properties: {",
+									"                        model: { type: \"string\" },",
+									"                        action: { type: \"string\" }",
+									"                    },",
+									"                    required: [\"model\", \"action\"]",
+									"                },",
+									"                data: {",
+									"                    type: \"object\",",
+									"                    properties: {",
+									"                        id: { type: \"string\" },",
+									"                        name: { type: \"string\" },",
+									"                        createdBy: { type: \"string\" },",
+									"                        updatedBy: { type: \"string\" },",
+									"                        createdAt: { type: \"string\" },",
+									"                        updatedAt: { type: \"string\" }",
+									"                    },",
+									"                    required: [\"id\", \"name\", \"createdBy\", \"updatedBy\", \"createdAt\", \"updatedAt\"]",
+									"                }",
+									"            },",
+									"            required: [\"meta\", \"data\"]",
+									"        };",
+									"",
+									"        var response = pm.response.json();",
+									"        pm.expect(tv4.validate(response, schema)).to.be.true;",
+									"",
+									"        pm.environment.set('fileIdToBeDeleted', response.data.id);",
+									"    });",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-9d2977d7-155e-4893-9b92-318956d4ab15",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"post\",\n    \"path\": \"/specifications/{{specificationId1}}/files\",\n    \"body\": {\n        \"name\": \"user.yaml\",\n        \"content\": \"new schema\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List all files",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2536b8e2-fec0-4b81-adef-e2cc3203c29c",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Validate file\", function(){",
+									"        const responseData = pm.response.json();",
+									"",
+									"        pm.expect(responseData.data.length).to.eql(2);",
+									"        pm.expect(responseData.data[0]).to.have.all.keys('id','name', 'content')",
+									"        console.log(responseData);",
+									"        console.log(pm.environment.get(\"fileId\"))",
+									"",
+									"        const targetFileId = pm.environment.get(\"fileId\"),",
+									"        file = _.find(responseData.data,{id:targetFileId});",
+									"        console.log(file);",
+									"",
+									"        pm.expect(file.id).to.be.eql(targetFileId);",
+									"        pm.expect(file.content).to.be.eql(\"openapi: '3.0.0'\\ninfo:\\n  version: '1.0.0'\\n  title: 'Sample API'\\n  description: Buy or rent spacecrafts\\n\\npaths:\\n  /spacecrafts/{spacecraftId}:\\n    parameters:\\n      - name: spacecraftId\\n        description: The unique identifier of the spacecraft\\n        in: path\\n        required: true\\n        schema:\\n          $ref: '#/components/schemas/SpacecraftId'\\n    get:\\n      summary: Read a spacecraft\\n      responses:\\n        '200':\\n          description: The spacecraft corresponding to the provided spacecraftId\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Spacecraft'\\n        404:\\n          description: No spacecraft found for the provided spacecraftId\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Error'\\n        500:\\n          description: Unexpected error\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Error'\\ncomponents:\\n  schemas:\\n    SpacecraftId:\\n      description: The unique identifier of a spacecraft\\n      type: string\\n    Spacecraft:\\n      type: object\\n      required:\\n        - id\\n        - name\\n        - type\\n      properties:\\n        id:\\n          $ref: '#/components/schemas/SpacecraftId'\\n        name:\\n          type: string\\n        type:\\n          type: string\\n          enum:\\n            - capsule\\n            - probe\\n            - satellite\\n            - spaceplane\\n            - station\\n        description:\\n          type: string\\n    Error:\\n      type: object\\n      required:\\n        - message\\n      properties:\\n        message:\\n          description: A human readable error message\\n          type: string\\n  securitySchemes:\\n    ApiKey:\\n      type: apiKey\\n      in: header\\n      name: X-Api-Key\\nsecurity:\\n  - ApiKey: []\"",
+									");",
+									"        pm.expect(file.name).to.be.eql(\"index.yml\");",
+									"    })",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-568f6667-fa68-4b2c-b0a9-ac4d98f9935b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/files\",\n    \"query\": {\n        \"fields\": \"content,name,id\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update file content",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "024e5673-06aa-45f1-a5ea-2c9bac95300d",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"validate content\", function () {",
+									"        var jsonData = pm.response.json();",
+									"",
+									"        pm.expect(jsonData).to.be.an('object');",
+									"        pm.expect(jsonData.meta).to.be.an('object');",
+									"        pm.expect(jsonData.meta).to.have.property('model');",
+									"        pm.expect(jsonData.meta).to.have.property('action');",
+									"        pm.expect(jsonData.data).to.be.an('object');",
+									"        pm.expect(jsonData.data).to.have.property('id');",
+									"        pm.expect(jsonData.data).to.have.property('updatedAt');",
+									"        pm.expect(jsonData.data).to.have.property('updatedBy');",
+									"",
+									"    });",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-73afff16-0ca4-4f48-8738-7364ffe4dfac",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"patch\",\n    \"path\": \"/specifications/{{specificationId1}}/files/{{fileId}}\",\n    \"body\": [\n        {\n            \"op\": \"replace\",\n            \"path\": \"/content\",\n            \"value\": \"openapi: '3.0.0'\\ninfo:\\n  version: '1.0.0'\\n  title: 'Sample API'\\n  description: Buy or rent another spacecrafts\\n\\npaths:\\n  /spacecrafts/{spacecraftId}:\\n    parameters:\\n      - name: spacecraftId\\n        description: The unique identifier of the spacecraft\\n        in: path\\n        required: true\\n        schema:\\n          $ref: '#/components/schemas/SpacecraftId'\\n    get:\\n      summary: Read a spacecraft\\n      responses:\\n        '200':\\n          description: The spacecraft corresponding to the provided spacecraftId\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Spacecraft'\\n        404:\\n          description: No spacecraft found for the provided spacecraftId\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Error'\\n        500:\\n          description: Unexpected error\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Error'\\ncomponents:\\n  schemas:\\n    SpacecraftId:\\n      description: The unique identifier of a spacecraft\\n      type: string\\n    Spacecraft:\\n      type: object\\n      required:\\n        - id\\n        - name\\n        - type\\n      properties:\\n        id:\\n          $ref: '#/components/schemas/SpacecraftId'\\n        name:\\n          type: string\\n        type:\\n          type: string\\n          enum:\\n            - capsule\\n            - probe\\n            - satellite\\n            - spaceplane\\n            - station\\n        description:\\n          type: string\\n    Error:\\n      type: object\\n      required:\\n        - message\\n      properties:\\n        message:\\n          description: A human readable error message\\n          type: string\\n  securitySchemes:\\n    ApiKey:\\n      type: apiKey\\n      in: header\\n      name: X-Api-Key\\nsecurity:\\n  - ApiKey: []\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate updated file record",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a9df3122-48c4-4c0c-b4f9-c103f10a2468",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    // validate updated record",
+									"    // TODO: Fix this",
+									"    pm.test(\"Validate updated file\", function(){",
+									"        const responseData = pm.response.json();",
+									"",
+									"        const targetFileId = pm.environment.get(\"fileId\"),",
+									"        updatedFile = _.find(responseData.data,{id:targetFileId});",
+									"",
+									"        pm.expect(updatedFile.id).to.be.eql(targetFileId);",
+									"        pm.expect(updatedFile.content).to.be.eql(\"openapi: '3.0.0'\\ninfo:\\n  version: '1.0.0'\\n  title: 'Sample API'\\n  description: Buy or rent another spacecrafts\\n\\npaths:\\n  /spacecrafts/{spacecraftId}:\\n    parameters:\\n      - name: spacecraftId\\n        description: The unique identifier of the spacecraft\\n        in: path\\n        required: true\\n        schema:\\n          $ref: '#/components/schemas/SpacecraftId'\\n    get:\\n      summary: Read a spacecraft\\n      responses:\\n        '200':\\n          description: The spacecraft corresponding to the provided spacecraftId\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Spacecraft'\\n        404:\\n          description: No spacecraft found for the provided spacecraftId\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Error'\\n        500:\\n          description: Unexpected error\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Error'\\ncomponents:\\n  schemas:\\n    SpacecraftId:\\n      description: The unique identifier of a spacecraft\\n      type: string\\n    Spacecraft:\\n      type: object\\n      required:\\n        - id\\n        - name\\n        - type\\n      properties:\\n        id:\\n          $ref: '#/components/schemas/SpacecraftId'\\n        name:\\n          type: string\\n        type:\\n          type: string\\n          enum:\\n            - capsule\\n            - probe\\n            - satellite\\n            - spaceplane\\n            - station\\n        description:\\n          type: string\\n    Error:\\n      type: object\\n      required:\\n        - message\\n      properties:\\n        message:\\n          description: A human readable error message\\n          type: string\\n  securitySchemes:\\n    ApiKey:\\n      type: apiKey\\n      in: header\\n      name: X-Api-Key\\nsecurity:\\n  - ApiKey: []\");",
+									"        pm.expect(updatedFile.name).to.be.eql(\"index.yml\");",
+									"    })",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-a0c8d882-5773-4617-ab43-ab29af2149c5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/tree\",\n    \"query\": {\n        \"fields\": \"content,path,name,id,fileType,type\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-48802467-cd9a-4e29-a999-ab88b1299764"
+		},
+		{
+			"name": "Collection syncing",
+			"item": [
+				{
+					"name": "Sync collection",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "43ef81ca-4a46-4ffa-b3f9-5a6031c91915",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 202\", function () {",
+									"        pm.response.to.have.status(202);",
+									"    });",
+									"",
+									"",
+									"    if (pm.response.code !== 202)  {",
+									"        throw 'StatusCode: ' + pm.response.code;",
+									"    }",
+									"",
+									"    pm.test(\"Response has the required fields - 'meta' and 'data'\", function () {",
+									"        const responseData = pm.response.json();",
+									"        ",
+									"        pm.expect(responseData).to.be.an('object');",
+									"        pm.expect(responseData).to.have.property('meta');",
+									"        pm.expect(responseData).to.have.property('data');",
+									"    });",
+									"",
+									"",
+									"    pm.test(\"TaskId in the response data is a non-empty string\", function () {",
+									"        const responseData = pm.response.json();",
+									"        ",
+									"        pm.expect(responseData.data.taskId).to.be.a('string').and.to.have.lengthOf.at.least(1, \"TaskId should be a non-empty string\");",
+									"",
+									"        pm.environment.set(\"taskId\", responseData.data.taskId);",
+									"    });",
+									"",
+									"",
+									"    pm.test(\"Content type is application/json\", function () {",
+									"        pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"    });",
+									"    ",
+									"",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"    pm.execution.setNextRequest('Delete file');",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-5768caac-f492-41e7-8819-24c738779f1d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"post\",\n    \"path\": \"/specifications/{{specificationId1}}/collections/{{collectionId}}/sync\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List syncing task status - until finished",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e0d51b47-25cd-4fdb-b22d-11c6dff3facf",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Response status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Syncing is successful\", function () {",
+									"        var response = pm.response.json();",
+									"        pm.expect(response).to.have.property('meta');",
+									"        pm.expect(response).to.have.property('data');",
+									"        pm.expect(response.meta).to.be.an('object').that.has.property('model');",
+									"        pm.expect(response.meta).to.be.an('object').that.has.property('action');",
+									"        pm.expect(response.data).to.be.an('object').that.has.property(pm.environment.get('taskId'));",
+									"",
+									"        const currentRetryCount = Number(pm.environment.get('syncingStatusRetryCount'));",
+									"",
+									"        if (currentRetryCount > 5) {",
+									"            console.log('Exceeded retries');",
+									"",
+									"            throw 'Exceeded retries';",
+									"        } else if (response.data[pm.environment.get('taskId')] === 'in-progress') {",
+									"            pm.environment.set('syncingStatusRetryCount', currentRetryCount + 1);",
+									"",
+									"            pm.execution.setNextRequest('List syncing task status - until finished');",
+									"        } else if (response.data[pm.environment.get('taskId')] === 'failed') {",
+									"            throw 'Status: failed';",
+									"        }",
+									"    });",
+									"} catch (err) {",
+									"    console.log('Error:', err);",
+									"    console.log('Response Body', pm.response.text());",
+									"",
+									"    pm.execution.setNextRequest('Delete file');",
+									"} finally {",
+									"    pm.environment.set('syncingStatusRetryCount', 0);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "cecf4fd4-c221-4f21-bd0a-1cd0a3c372e4",
+								"exec": [
+									"setTimeout(function() {}, 1000);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-914ea33f-89bc-4a1f-9331-a0994630a9f8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/tasks?entityId={{collectionId}}&entityType=collection&type=collection-sync\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-28c6b1dc-d3a1-4801-857d-eb254844b9a4"
+		},
+		{
+			"name": "Subscriptions",
+			"item": [
+				{
+					"name": "Create subscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5c12e61b-90e4-4e8c-afe5-130aa42f92c0",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 201\", function () {",
+									"        pm.response.to.have.status(201);",
+									"    });",
+									"",
+									"    if (pm.response.code !== 201)  {",
+									"        throw 'StatusCode: ' + pm.response.code;",
+									"    }",
+									"",
+									"    pm.test(\"Response is an object with meta and data properties\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.be.an('object');",
+									"        pm.expect(jsonData).to.have.property('meta');",
+									"        pm.expect(jsonData).to.have.property('data');",
+									"    });",
+									"",
+									"    pm.test(\"Schema is valid\", function () {",
+									"        var schema = {",
+									"            type: \"object\",",
+									"            properties: {",
+									"                meta: {",
+									"                    type: \"object\",",
+									"                    properties: {",
+									"                        action: { type: \"string\" },",
+									"                        model: { type: \"string\" }",
+									"                    }",
+									"                },",
+									"                data: {",
+									"                    type: \"object\",",
+									"                    properties: {},",
+									"                    required: []",
+									"                }",
+									"            },",
+									"            required: [\"meta\", \"data\"]",
+									"        };",
+									"",
+									"        var response = pm.response.json();",
+									"        pm.expect(tv4.validate(response, schema)).to.be.true;",
+									"    });",
+									"",
+									"",
+									"} catch (err) {",
+									"    console.log('Error:', err);",
+									"    console.log('Response Body', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-2228a1b5-e5fb-4b8a-86fc-ebd87d385fd6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-socket-id",
+								"value": "test-id",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"post\",\n    \"path\": \"/subscriptions\",\n    \"body\": {\n        \"models\": [\n            {\n                \"id\": \"{{specificationId1}}\",\n                \"type\": \"specification\"\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-1be28420-204b-41a7-9e50-66e3be3cff45"
+		},
+		{
+			"name": "Cleanup",
+			"item": [
+				{
+					"name": "Delete file",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b21dd0cf-f9eb-4dc4-891a-fa282fbd68b2",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Schema is valid\", function () {",
+									"    var schema = {",
+									"        type: \"object\",",
+									"        properties: {",
+									"        meta: {",
+									"            type: \"object\",",
+									"            properties: {",
+									"            action: { type: \"string\" },",
+									"            model: { type: \"string\" }",
+									"            },",
+									"            required: [\"action\", \"model\"]",
+									"        },",
+									"        data: {",
+									"            type: \"object\",",
+									"            properties: {",
+									"            id: { type: \"string\" }",
+									"            },",
+									"            required: [\"id\"]",
+									"        }",
+									"        },",
+									"        required: [\"meta\", \"data\"]",
+									"    };",
+									"",
+									"    var response = pm.response.json();",
+									"    pm.expect(tv4.validate(response, schema)).to.be.true;",
+									"    });",
+									"",
+									"    pm.test(\"Validate response against saved 'id' value\", function () {",
+									"        var savedId = pm.environment.get(\"fileIdToBeDeleted\");",
+									"        var responseBody = pm.response.json();",
+									"        var responseId = responseBody.data.id;",
+									"        pm.expect(responseId).to.equal(savedId);",
+									"    });",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"}",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-8938fe4d-59b6-4d08-9157-f6c382704c8a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"DELETE\",\n    \"path\": \"/specifications/{{specificationId1}}/files/{{fileIdToBeDeleted}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete folder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c3fdacdb-cff0-4a57-a134-5b6f3db71dba",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test('Response body is valid', function () {",
+									"        const jsonData = pm.response.json();",
+									"",
+									"        pm.expect(jsonData).to.be.an('object');",
+									"        pm.expect(jsonData).to.have.all.keys(['meta', 'data']);",
+									"    });",
+									"",
+									"    pm.test(\"Response body.meta is valid\", function () {",
+									"        const jsonData = pm.response.json();",
+									"",
+									"        pm.expect(jsonData.meta).to.be.an('object');",
+									"        pm.expect(jsonData.meta).to.have.property('model', 'SpecificationFolder');",
+									"        pm.expect(jsonData.meta).to.have.property('action', 'delete');",
+									"    });",
+									"",
+									"    pm.test(\"Response body.data is valid\", function () {",
+									"        var jsonData = pm.response.json();",
+									"",
+									"        pm.expect(jsonData.data).to.be.an('object');",
+									"        pm.expect(jsonData.data).to.have.all.keys('id');",
+									"    });",
+									"} catch (error) {",
+									"    console.log('Error:', err);",
+									"    console.log('Response Body', pm.response.text());",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-74f98275-5df4-4ba0-ba5f-f27bdaf1e7c8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"delete\",\n    \"path\": \"/specifications/{{specificationId1}}/folders/{{spec1FolderId1}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete subscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c34cef34-1be6-462d-a2cf-d091f29f569f",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 204\", function () {",
+									"        pm.response.to.have.status(204);",
+									"    });",
+									"} catch (err) {",
+									"    console.log('Error:', err);",
+									"    console.log('Response Body', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-56025a60-87d6-4650-914e-4a4759bb31cc",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-socket-id",
+								"value": "test-id",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"delete\",\n    \"path\": \"/subscriptions\",\n    \"body\": {\n        \"models\": [\n            {\n                \"id\": \"{{specificationId1}}\",\n                \"type\": \"specification\"\n            }\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Spec",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d14c89fa-0626-44f9-a9d2-2fca65c8d0d0",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Meta and Data objects are present in the response\", function () {",
+									"        const responseData = pm.response.json();",
+									"",
+									"        pm.expect(responseData).to.be.an('object');",
+									"        pm.expect(responseData.meta).to.exist.and.to.be.an('object');",
+									"        pm.expect(responseData.data).to.exist.and.to.be.an('object');",
+									"    });",
+									"",
+									"    pm.test(\"Data object contains all required keys\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.data).to.be.an('object');",
+									"    pm.expect(responseData.data).to.include.all.keys('id', 'type', 'name', 'description', 'createdBy', 'updatedBy', 'createdAt', 'updatedAt');",
+									"    });",
+									"",
+									"    pm.test('Data object should contain updated name', function () {",
+									"        var responseData = pm.response.json();",
+									"        pm.expect(responseData).to.be.an('object');",
+									"        pm.expect(responseData.data.name).to.be.equal('Updated name');",
+									"    });",
+									"",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-1a5fc6b0-0a62-400b-81d0-5c0e79bb390c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"patch\",\n    \"path\": \"/specifications/{{specificationId1}}\",\n    \"body\": [\n        {\n            \"op\": \"replace\",\n            \"path\": \"/name\",\n            \"value\": \"Updated name\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Spec",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "aaad512b-fb64-4eaa-9207-f598e74836a7",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Response time is within 5 seconds\", function () {",
+									"        pm.expect(pm.response.responseTime).to.be.below(5000);",
+									"    });",
+									"",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Schema is valid\", function () {",
+									"    var schema = {",
+									"        type: \"object\",",
+									"        properties: {",
+									"        meta: {",
+									"            type: \"object\",",
+									"            properties: {",
+									"            action: { type: \"string\" },",
+									"            model: { type: \"string\" }",
+									"            },",
+									"            required: [\"action\", \"model\"]",
+									"        },",
+									"        data: {",
+									"            type: \"object\",",
+									"            properties: {",
+									"            id: { type: \"string\" }",
+									"            },",
+									"            required: [\"id\"]",
+									"        }",
+									"        },",
+									"        required: [\"meta\", \"data\"]",
+									"    };",
+									"",
+									"    var response = pm.response.json();",
+									"    pm.expect(tv4.validate(response, schema)).to.be.true;",
+									"    });",
+									"",
+									"    // Test for response against saved value",
+									"    pm.test(\"Validate response against saved 'id' value\", function () {",
+									"        var savedId = pm.environment.get(\"specificationId1\");",
+									"        var responseBody = pm.response.json();",
+									"        var responseId = responseBody.data.id;",
+									"        pm.expect(responseId).to.equal(savedId);",
+									"    });",
+									"} catch (err) {",
+									"    console.log('Error:', err);",
+									"    console.log('Response Body', pm.response.text());",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-c0392b55-15d2-43e9-870c-5f4ab1bb669b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"delete\",\n    \"path\": \"/specifications/{{specificationId1}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a collection",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c412397-68e9-44af-89e0-f31eea38b5fe",
+								"exec": [
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-69b91e1d-8e42-429a-8ead-4cb595ddd274",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{bifrostHost}}/collection/{{collectionId}}",
+							"host": [
+								"{{bifrostHost}}"
+							],
+							"path": [
+								"collection",
+								"{{collectionId}}"
+							]
+						},
+						"description": "Generated from cURL: curl --location --globoff --request DELETE '{{baseUrl}}/collection/694899-ea8013be-34a1-4e3a-8bb4-15dc423e220d'"
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-f2029b9e-bbf0-4717-a15f-276ff2b55575"
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{userToken}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "x-access-token",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "3a5248ee-07a9-4c5a-9a02-56fdaeac75ac",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "afe7c9c4-3239-44b4-abec-d1731f19065e",
+				"type": "text/javascript",
+				"exec": [
+					"if (pm.response.code >= 500) {",
+					"    console.log('Response code: ', pm.response.code);",
+					"    console.log('Response body: ', pm.response.text());",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://api-specification.postman-beta.tech",
+			"type": "string"
+		}
+	]
+}
