@@ -1298,6 +1298,75 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Validate updated file record Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d212118b-9944-4eb3-89bf-ae65765f6c3d",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Validate updated file\", function(){",
+									"        const responseData = pm.response.json(),",
+									"        targetFileId = pm.environment.get(\"fileId\"),",
+									"        updatedFile = responseData.data;",
+									"",
+									"        pm.expect(updatedFile.id).to.be.eql(targetFileId);",
+									"        pm.expect(updatedFile.content).to.be.eql(\"openapi: '3.0.0'\\ninfo:\\n  version: '1.0.0'\\n  title: 'Sample API'\\n  description: Buy or rent another spacecrafts\\n\\npaths:\\n  /spacecrafts/{spacecraftId}:\\n    parameters:\\n      - name: spacecraftId\\n        description: The unique identifier of the spacecraft\\n        in: path\\n        required: true\\n        schema:\\n          $ref: '#/components/schemas/SpacecraftId'\\n    get:\\n      summary: Read a spacecraft\\n      responses:\\n        '200':\\n          description: The spacecraft corresponding to the provided spacecraftId\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Spacecraft'\\n        404:\\n          description: No spacecraft found for the provided spacecraftId\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Error'\\n        500:\\n          description: Unexpected error\\n          content:\\n            application/json:\\n              schema:\\n                $ref: '#/components/schemas/Error'\\ncomponents:\\n  schemas:\\n    SpacecraftId:\\n      description: The unique identifier of a spacecraft\\n      type: string\\n    Spacecraft:\\n      type: object\\n      required:\\n        - id\\n        - name\\n        - type\\n      properties:\\n        id:\\n          $ref: '#/components/schemas/SpacecraftId'\\n        name:\\n          type: string\\n        type:\\n          type: string\\n          enum:\\n            - capsule\\n            - probe\\n            - satellite\\n            - spaceplane\\n            - station\\n        description:\\n          type: string\\n    Error:\\n      type: object\\n      required:\\n        - message\\n      properties:\\n        message:\\n          description: A human readable error message\\n          type: string\\n  securitySchemes:\\n    ApiKey:\\n      type: apiKey\\n      in: header\\n      name: X-Api-Key\\nsecurity:\\n  - ApiKey: []\");",
+									"        pm.expect(updatedFile.name).to.be.eql(\"index.yml\");",
+									"    })",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-44190565-4533-4304-afd6-012c43d899ac",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// this has some data -fork",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"id": "6294718-74501095-7520-4ae5-b00e-3294f634c86b"
