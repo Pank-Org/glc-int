@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "10497157-e69bb7a2-b1fe-4c52-839a-710868256e03",
-		"name": "[Monitor] [Sanity] API Specification services",
+		"name": "[Monitor] [Sanity] API Specification service",
 		"description": "Debugging steps if you see failures in this reported via the monitors:\n\n[https://whimsical.com/triage-monitor-failures-868kMPybZfPsAxrrT8NF62](https://whimsical.com/triage-monitor-failures-868kMPybZfPsAxrrT8NF62)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
