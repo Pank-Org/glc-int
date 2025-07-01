@@ -19,7 +19,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"abc\":\"def123\"\n}",
+							"raw": "{\n    \"abc\":\"def\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
