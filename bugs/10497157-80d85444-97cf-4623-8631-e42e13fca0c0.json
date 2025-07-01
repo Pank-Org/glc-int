@@ -19,12 +19,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"a\":\"b6\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"a\":\"b6\"\n}"
 						},
 						"url": {
 							"raw": "www.google.com",
