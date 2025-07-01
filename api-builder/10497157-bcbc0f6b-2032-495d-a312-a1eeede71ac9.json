@@ -989,6 +989,74 @@
 					"response": []
 				},
 				{
+					"name": "Validate updated folder record Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "03f97e60-c674-4f40-8b9c-de124fc9231f",
+								"exec": [
+									"try {",
+									"    const apiBuilderRequestRetryScript = pm.require('@postman/api-builder-request-retry-script');",
+									"",
+									"    if (apiBuilderRequestRetryScript.retryOnFailure()) {",
+									"        // We don't want to run further assertions since this request will be retried because >500 (e.g 502, 504) response code was received.",
+									"        return;",
+									"    }",
+									"",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Validate updated folder\", function(){",
+									"        const responseData = pm.response.json(),",
+									"        targetFolderId = pm.environment.get(\"spec1FolderId1\"),",
+									"        updatedFolder = responseData.data;",
+									"",
+									"        pm.expect(updatedFolder.id).to.be.eql(targetFolderId);",
+									"        pm.expect(updatedFolder.name).to.be.eql(\"folder1Updated\");",
+									"    })",
+									"} catch (error) {",
+									"    console.log('Error:', error);",
+									"    console.log('Response Body', pm.response.text());",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {
+									"@postman/api-builder-request-retry-script": {
+										"id": "019491be-1f51-7e13-b196-4e4fec49649f"
+									}
+								}
+							}
+						}
+					],
+					"id": "10497157-24e3717b-8c73-493d-8d74-4233e4988fbd",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/folders/{{spec1FolderId1}}\",\n    \"query\": {\n        \"fields\": \"path,name,id\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{bifrostProxyUrl}}",
+							"host": [
+								"{{bifrostProxyUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Add file",
 					"event": [
 						{
@@ -1288,7 +1356,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/files/{{fileId}}\",\n    \"query\": {\n        \"fields\": \"content,path,name,id,type\"\n    }\n}"
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/files/{{fileId}}\",\n    \"query\": {\n        \"fields\": \"new content\"\n    }\n}"
 						},
 						"url": {
 							"raw": "{{bifrostProxyUrl}}",
