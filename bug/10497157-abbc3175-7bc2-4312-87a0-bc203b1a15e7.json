@@ -39,6 +39,35 @@
 				}
 			],
 			"id": "10497157-5f7e706f-a2a1-47a1-822d-351435826c10"
+		},
+		{
+			"name": "New Request Copy",
+			"id": "10497157-fac337a8-4bb0-4102-a7e3-a033fc018c1c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"abc\":\"def123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "www.google.com",
+					"host": [
+						"www",
+						"google",
+						"com"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
