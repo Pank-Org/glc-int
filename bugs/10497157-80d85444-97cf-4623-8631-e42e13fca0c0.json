@@ -19,7 +19,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"a\":\"b3\"\n}",
+							"raw": "{\n    \"a\":\"b4\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
