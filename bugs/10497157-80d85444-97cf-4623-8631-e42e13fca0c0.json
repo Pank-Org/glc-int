@@ -43,7 +43,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"a\":\"b6\"\n}"
+							"raw": "{\n    \"a\":\"b7\"\n}"
 						},
 						"url": {
 							"raw": "www.google.com",
