@@ -1,0 +1,44 @@
+{
+	"info": {
+		"_postman_id": "10497157-720bc1c8-dd83-4b11-af5d-16d6070ca7cf",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "New Folder",
+			"item": [
+				{
+					"name": "New Request",
+					"id": "10497157-04954297-3a60-4ec8-a564-50c79f40cb5b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/tree\",\n    \"query\": {\n        \"fields\": \"content,path,name,id,fileType,type\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "www.google.com",
+							"host": [
+								"www",
+								"google",
+								"com"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-a7574725-3ba4-4d2e-a381-d31033ebf3f5"
+		}
+	]
+}
