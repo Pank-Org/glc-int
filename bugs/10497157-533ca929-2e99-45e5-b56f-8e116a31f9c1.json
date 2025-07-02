@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "10497157-533ca929-2e99-45e5-b56f-8e116a31f9c1",
-		"name": "New Collection",
+		"name": "Buggy Collection",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -19,7 +19,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"service5\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/tree\",\n    \"query\": {\n        \"fields\": \"content,path,name,id,fileType\"\n    }\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
