@@ -27,11 +27,14 @@
 							}
 						},
 						"url": {
-							"raw": "www.google.com",
+							"raw": "www.google.com/123",
 							"host": [
 								"www",
 								"google",
 								"com"
+							],
+							"path": [
+								"123"
 							]
 						}
 					},
