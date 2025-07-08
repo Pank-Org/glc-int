@@ -6,7 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "New Folder1",
+			"name": "New Folder",
 			"item": [
 				{
 					"name": "New Request",
@@ -19,7 +19,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"service5\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/tree\",\n    \"query\": {\n        \"fields\": \"content,path,name,id,fileType\"\n    }\n}",
+							"raw": "{\n    \"service5\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/tree\",\n    \"query\": {\n        \"fields\": \"content,path,name,id,fileType,types\"\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
