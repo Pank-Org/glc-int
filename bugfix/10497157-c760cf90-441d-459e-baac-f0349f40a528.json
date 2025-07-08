@@ -22,7 +22,7 @@
 							"raw": "{\n    \"service5\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/tree\",\n    \"query\": {\n        \"fields\": \"new values\"\n    }\n}",
 							"options": {
 								"raw": {
-									"language": "text"
+									"language": "json"
 								}
 							}
 						},
