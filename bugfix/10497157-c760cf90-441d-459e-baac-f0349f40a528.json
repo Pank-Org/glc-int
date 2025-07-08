@@ -1,15 +1,15 @@
 {
 	"info": {
 		"_postman_id": "10497157-c760cf90-441d-459e-baac-f0349f40a528",
-		"name": "New Collection",
+		"name": "New Collection1",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "New Folder",
+			"name": "New Folder1",
 			"item": [
 				{
-					"name": "New Request",
+					"name": "New Request1",
 					"id": "10497157-0e473b59-bc1b-430b-9895-e675a55f9b4f",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -19,10 +19,10 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"service5\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/tree\",\n    \"query\": {\n        \"fields\": \"new values, to, be added\"\n    }\n}",
+							"raw": "{\n    \"service5\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/tree\",\n    \"query\": {\n        \"fields\": \"new values\"\n    }\n}",
 							"options": {
 								"raw": {
-									"language": "json"
+									"language": "text"
 								}
 							}
 						},
