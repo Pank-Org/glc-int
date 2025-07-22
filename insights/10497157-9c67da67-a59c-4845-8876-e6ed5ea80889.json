@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "10497157-9c67da67-a59c-4845-8876-e6ed5ea80889",
+		"_postman_id": "6357799-fdb21f43-39db-4793-b825-a44789a495c9",
 		"name": "[Beta] Back-end post-deployment tests",
 		"description": "These tests access Insights APIs via the Bifrost proxy (so that they can be run in any environment.)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -185,12 +185,15 @@
 							"listen": "prerequest",
 							"script": {
 								"id": "09393ed3-ea20-475c-be29-2c6cb75ddffe",
-								"exec": [],
-								"type": "text/javascript"
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
-					"id": "10497157-afc1b79d-b6d4-4e41-ba3c-cf2ff5d1d44d",
+					"id": "6357799-b189613e-3c39-4a1d-b7d7-5d9c30f9a80d",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -248,7 +251,7 @@
 							}
 						}
 					],
-					"id": "10497157-a407be25-d78b-4b41-912d-be81ff59dff1",
+					"id": "6357799-f078742e-86bf-4ae0-b816-ee8bded059ac",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -303,7 +306,7 @@
 							}
 						}
 					],
-					"id": "10497157-3bb54dba-a762-4c2c-8004-8652b688ca49",
+					"id": "6357799-56b0c47e-a06a-4ada-bfc5-52aded3bea6a",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -364,7 +367,7 @@
 							}
 						}
 					],
-					"id": "10497157-43d7e910-27f1-41c0-b5e7-d74fb50d9495",
+					"id": "6357799-2bdda7e0-f8bb-437a-8da8-37b55e9244a4",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -390,7 +393,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-27e13ec2-097b-48bb-871f-ba78dc67b4a6",
+			"id": "6357799-6c22405c-da23-4f89-bc25-bd3dce9b4646",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -538,7 +541,7 @@
 							}
 						}
 					],
-					"id": "10497157-92636bc8-f807-4bce-8ee4-fbad8d95cc09",
+					"id": "6357799-3fd2642b-b13a-468a-b5e9-5ff77b0571d9",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -595,7 +598,7 @@
 							}
 						}
 					],
-					"id": "10497157-f63be099-6947-4744-9558-28f35de1d058",
+					"id": "6357799-7991b549-42a8-4a35-b1b8-293280740fdd",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -656,7 +659,7 @@
 							}
 						}
 					],
-					"id": "10497157-ae312bcc-deeb-4b93-b282-1a17c2fef26f",
+					"id": "6357799-d4932f08-4253-4e2c-a3b0-5fa01dc042d3",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -682,7 +685,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-388d02c5-2635-4302-b972-8a70bebe92e9",
+			"id": "6357799-2a302781-b9ac-48c2-999c-becce45c92dc",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -832,7 +835,7 @@
 							}
 						}
 					],
-					"id": "10497157-cbb1f6be-a23b-4432-b142-0d2b59592d7d",
+					"id": "6357799-4ba5f635-eee2-4fc9-8d7b-491cb5817b95",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -895,7 +898,7 @@
 							}
 						}
 					],
-					"id": "10497157-09a68df6-a350-49e7-8e3f-a6232ea0a37d",
+					"id": "6357799-b5feb066-4222-4710-a1e3-a9201ded4598",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -1049,7 +1052,7 @@
 							}
 						}
 					],
-					"id": "10497157-9953eca8-f81e-4efb-9a79-88cb49206120",
+					"id": "6357799-6624ff9f-184a-4694-ab5c-7cb58336915d",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -1203,7 +1206,7 @@
 							}
 						}
 					],
-					"id": "10497157-d05c726f-d176-45ee-a48c-d5c5c825b693",
+					"id": "6357799-8e7de972-303f-486b-96c7-c40dd0c16f7e",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -1357,7 +1360,7 @@
 							}
 						}
 					],
-					"id": "10497157-74c962d5-41e7-41c8-8b9c-575472468bc1",
+					"id": "6357799-699580f9-5710-4a57-aaa9-cb842ed21202",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -1496,7 +1499,7 @@
 							}
 						}
 					],
-					"id": "10497157-eb1a69e5-e2af-4941-9b8e-3700fedf38c4",
+					"id": "6357799-3bb8b0fb-c4e6-4812-bea9-5ad6e0801614",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -1638,7 +1641,7 @@
 							}
 						}
 					],
-					"id": "10497157-8cd230aa-c687-4b65-bac0-9da6a78f292f",
+					"id": "6357799-6160d879-6151-4843-857a-1015d6ea86c7",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -1695,7 +1698,7 @@
 							}
 						}
 					],
-					"id": "10497157-f3884c43-a883-4b60-95fa-e037c8dbc0bf",
+					"id": "6357799-18cc0f44-09d2-4e37-b256-e827bbdd81a4",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -1756,7 +1759,7 @@
 							}
 						}
 					],
-					"id": "10497157-b26e56ad-e358-43b7-9240-b7e54f7bdde0",
+					"id": "6357799-aefb72ae-f243-481d-9da9-9f1729e95a4c",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -1782,7 +1785,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-c6de9875-ba9e-42d9-87bb-9ea93f8a07f7"
+			"id": "6357799-d4685345-a69f-4020-8bfa-51981931c443"
 		},
 		{
 			"name": "Telemetry",
@@ -1830,7 +1833,7 @@
 									}
 								}
 							],
-							"id": "10497157-c68dc65c-732b-497b-8316-493316418f17",
+							"id": "6357799-6dab3728-7414-4852-b0f1-2be729235695",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1887,7 +1890,7 @@
 									}
 								}
 							],
-							"id": "10497157-a1b75ec0-6a66-4390-9289-5445af328435",
+							"id": "6357799-204434d7-568d-4e55-be9c-7ccc9a49d895",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1950,7 +1953,7 @@
 									}
 								}
 							],
-							"id": "10497157-b2bd76cd-3415-473b-af25-3d99f8aa256a",
+							"id": "6357799-5017274f-bc64-4d03-a398-b80318c41ff2",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -1976,7 +1979,7 @@
 							"response": []
 						}
 					],
-					"id": "10497157-4f034309-be0f-4a1b-9bbe-2159dfd100ff"
+					"id": "6357799-e0755d38-6127-475b-a288-d2c36d722a1e"
 				},
 				{
 					"name": "Client Telemetry Data",
@@ -2038,7 +2041,7 @@
 									}
 								}
 							],
-							"id": "10497157-3d256887-af8e-442e-a3dc-62c5b0a2821a",
+							"id": "6357799-b3f780e4-2ed1-4752-a3fa-be8755350140",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2120,7 +2123,7 @@
 									}
 								}
 							],
-							"id": "10497157-885318b9-f441-4370-a948-14dccac8a642",
+							"id": "6357799-38a1d4ab-150a-46a7-bf12-4846283d964e",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2177,7 +2180,7 @@
 									}
 								}
 							],
-							"id": "10497157-ca5c9f76-24ab-458b-80b0-1dd3eabfdd2c",
+							"id": "6357799-7d1b99ac-e314-4a8e-8809-2155faaf622d",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2240,7 +2243,7 @@
 									}
 								}
 							],
-							"id": "10497157-99136f55-d4fa-41ff-8506-dfb1c8773e38",
+							"id": "6357799-5a513206-bd45-4ec8-a61b-6b093dda4fcd",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -2266,10 +2269,10 @@
 							"response": []
 						}
 					],
-					"id": "10497157-d59c0f36-9a11-4957-8902-f491d209c3ec"
+					"id": "6357799-b4ef3d12-6649-448a-9bca-33c9ff36e8b9"
 				}
 			],
-			"id": "10497157-1e46d549-7f67-4577-855e-889c3ff8dfef"
+			"id": "6357799-c28b7491-55e8-438a-9f0f-6dade64a4f57"
 		},
 		{
 			"name": "Edit a Service",
@@ -2340,7 +2343,7 @@
 							}
 						}
 					],
-					"id": "10497157-1566447f-b8ab-4ac0-930c-ef5104f910b9",
+					"id": "6357799-1c925694-9995-4df5-bc25-136920bc1959",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -2402,7 +2405,7 @@
 							}
 						}
 					],
-					"id": "10497157-0ab17c48-d86a-49a5-afe3-4e5c4fd21663",
+					"id": "6357799-65b09788-14c2-47ed-bd39-b36d4dd07d85",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -2460,7 +2463,7 @@
 							}
 						}
 					],
-					"id": "10497157-1c04cad3-e4f1-4881-bb44-ff510b3417f2",
+					"id": "6357799-39a7c888-d075-4f83-803f-a8f59f842905",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -2521,7 +2524,7 @@
 							}
 						}
 					],
-					"id": "10497157-09230752-5cc6-49f2-9a43-ac1370175f75",
+					"id": "6357799-e11540d9-314d-45a7-8f5e-5f583dfd3e68",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -2547,7 +2550,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-8c09cb2a-f6b2-41c4-b833-0f4847e890be"
+			"id": "6357799-1c8b1a58-b77d-4d15-9bf3-98c48daf47e9"
 		},
 		{
 			"name": "List curated collections",
@@ -2617,7 +2620,7 @@
 							}
 						}
 					],
-					"id": "10497157-2387b862-b3b7-4837-a045-76229ca72d72",
+					"id": "6357799-7d77e8ff-41a0-4730-b081-7ee9f6fcfa74",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -2675,7 +2678,7 @@
 							}
 						}
 					],
-					"id": "10497157-7aa84281-7d83-4d22-8288-58db46855b25",
+					"id": "6357799-5d03d2d1-6ee3-48b2-ade1-03283baeacc0",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -2736,7 +2739,7 @@
 							}
 						}
 					],
-					"id": "10497157-7518e561-534b-4aa4-bc01-89cf33e00a5c",
+					"id": "6357799-5b426fe0-2d09-4186-babc-8f1b0cdf3cbb",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -2794,7 +2797,7 @@
 							}
 						}
 					],
-					"id": "10497157-21e5e434-3351-45f4-bc25-9fef6c76999c",
+					"id": "6357799-b4135063-9593-4cfd-ab51-49a3299e5408",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -2888,7 +2891,7 @@
 							}
 						}
 					],
-					"id": "10497157-cef32624-e2ea-4ae5-87a6-4d68cd6cbe50",
+					"id": "6357799-112795a3-7755-48f1-bfc5-b4d7d76dd7e1",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -2914,7 +2917,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-5dac615a-d2e3-4a77-8086-e9289315de4d"
+			"id": "6357799-304383c3-12e9-4783-bb38-4217d1274b93"
 		},
 		{
 			"name": "Get service endpoints",
@@ -3016,7 +3019,7 @@
 							}
 						}
 					],
-					"id": "10497157-3faf8839-b570-408b-8f38-c930b5fecff0",
+					"id": "6357799-71cf7f6c-50e9-4f0e-b6c0-50bbfb2f5c3d",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3077,7 +3080,7 @@
 							}
 						}
 					],
-					"id": "10497157-a95e6322-29b6-4df3-821e-9aa484a83614",
+					"id": "6357799-8d498285-82e8-41ce-9eb1-d46653c74de2",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3135,7 +3138,7 @@
 							}
 						}
 					],
-					"id": "10497157-550c479a-3fc5-457e-a4b6-1261203001a2",
+					"id": "6357799-c4430943-9b0b-4689-9318-00ad97aaff33",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3196,7 +3199,7 @@
 							}
 						}
 					],
-					"id": "10497157-54677999-859c-43fd-a13d-012fc483710d",
+					"id": "6357799-032c2077-2877-44a5-9eab-d62b24c135ad",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3222,7 +3225,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-ccfe83c9-da5d-4ef1-a5cc-26b11d2c8a08"
+			"id": "6357799-43081795-f237-4aaf-83f7-ce7a19ef0996"
 		},
 		{
 			"name": "Get service Errors",
@@ -3339,7 +3342,7 @@
 							}
 						}
 					],
-					"id": "10497157-15a5040d-4fb6-46c0-91e0-aa82d59339cc",
+					"id": "6357799-da520fe9-c486-472a-9542-897d64a9df52",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3400,7 +3403,7 @@
 							}
 						}
 					],
-					"id": "10497157-134ee400-8259-49a1-a234-26486a233daf",
+					"id": "6357799-34d89871-09df-483b-97fc-1bb3042a35ae",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3458,7 +3461,7 @@
 							}
 						}
 					],
-					"id": "10497157-2384ce57-9b0b-45cc-a874-47a1a824d095",
+					"id": "6357799-a1515998-bed6-441c-8a59-20b5317f71a0",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3519,7 +3522,7 @@
 							}
 						}
 					],
-					"id": "10497157-72f75993-db2e-40c4-8e8c-be688438d936",
+					"id": "6357799-73f54f26-e61e-49ca-87fb-fe7adfdad66f",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3545,7 +3548,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-0f282033-840d-4a29-8164-04304d868fe7"
+			"id": "6357799-8fae11a0-e272-4fe2-b5fc-b872e67c3370"
 		},
 		{
 			"name": "Get repo mode list",
@@ -3589,7 +3592,7 @@
 							}
 						}
 					],
-					"id": "10497157-f96b4d7d-de7a-45cc-8c66-c2853f98686d",
+					"id": "6357799-88c580c7-1dca-4efd-ae41-f69170ba408d",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3598,7 +3601,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/repro/list?offset=0&method=POST&host=api-observe.postman-stage.tech&path=%2Fv2%2Fworkspaces%2Fsubscribe\",\n    \"body\": {}\n}\n",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/repro/list?offset=0&method=POST&host=api-observe.postman-stage.tech&path=%2Fv2%2Fworkspaces%2Fsubscribe\",\n    \"body\": {}\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3648,7 +3651,7 @@
 							}
 						}
 					],
-					"id": "10497157-b228b764-d716-4ece-9c2b-839a9a4ebd82",
+					"id": "6357799-d7a694ba-058a-449e-8309-a62d1343e0af",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3712,7 +3715,7 @@
 							}
 						}
 					],
-					"id": "10497157-e972caa8-b042-445d-b445-9102d333c656",
+					"id": "6357799-0a0575a0-2ef9-4655-b119-6db564654bd9",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3738,7 +3741,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-dcd35638-0618-439f-b7ee-ec355e617eeb"
+			"id": "6357799-3dfd4f74-d2ae-42d3-a76d-0703a46f6ead"
 		},
 		{
 			"name": "Get New Relic log URL",
@@ -3784,7 +3787,7 @@
 							}
 						}
 					],
-					"id": "10497157-77590b99-58d6-4350-8e60-e7eecee5e287",
+					"id": "6357799-1a311520-5dbf-48c6-8685-d48ac69f4ddc",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3844,7 +3847,7 @@
 							}
 						}
 					],
-					"id": "10497157-a9c3f03a-f96c-4027-bcf4-f8729d6d15fa",
+					"id": "6357799-a8039f8f-b706-4f57-a7b3-1b8f10159195",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3904,7 +3907,7 @@
 							}
 						}
 					],
-					"id": "10497157-b538f398-54c3-4895-a76e-f3a56f307321",
+					"id": "6357799-6ee8d219-1937-4777-ab24-dcecde3e76ec",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3933,7 +3936,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-4ca8b21d-4d32-4c31-b2bb-dddd70eda454"
+			"id": "6357799-dfe3bd23-ed4a-4cbc-842b-fc17c539c2cd"
 		},
 		{
 			"name": "Get Agent status",
@@ -4011,7 +4014,7 @@
 							}
 						}
 					],
-					"id": "10497157-d6438e3a-d412-4cca-8dfb-f801ca266b32",
+					"id": "6357799-cc79b3a3-7c9f-44c7-af62-42ff8f66f1f0",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4070,7 +4073,7 @@
 							}
 						}
 					],
-					"id": "10497157-d7eda272-35d5-4480-8aba-18d02b201a5f",
+					"id": "6357799-ecf09aa4-cb9d-44f4-947f-2610b3f6f68e",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4128,7 +4131,7 @@
 							}
 						}
 					],
-					"id": "10497157-d3517620-7390-4bc1-aed7-0beb51c069a0",
+					"id": "6357799-a7880c38-c4ac-44a1-8efe-eee251870a02",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4189,7 +4192,7 @@
 							}
 						}
 					],
-					"id": "10497157-6c0990e2-b160-440e-8088-0192ecb6009a",
+					"id": "6357799-c471a96a-8103-4cdd-b3d1-bff94514c63d",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4215,7 +4218,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-f3b157d5-5e2e-4517-97d3-8d358279ba92"
+			"id": "6357799-a9e5ce65-78b9-4ca6-80cb-f782e78337b8"
 		},
 		{
 			"name": "Get workspace services",
@@ -4281,7 +4284,7 @@
 							}
 						}
 					],
-					"id": "10497157-48c6e0a7-9561-41e7-8b13-b67f3a33e207",
+					"id": "6357799-cdc05cc9-62b3-4346-aff8-248bb3da8301",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4340,7 +4343,7 @@
 							}
 						}
 					],
-					"id": "10497157-7e59d3fd-ad0c-4bbd-8fd8-5cb2278e41ef",
+					"id": "6357799-c73df630-7aab-44be-b5a3-c783fe5dec5a",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4398,7 +4401,7 @@
 							}
 						}
 					],
-					"id": "10497157-2ae4f58b-ea45-492c-8aad-131a970b6096",
+					"id": "6357799-f50d4012-3f07-4537-b852-1816a667caa4",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4459,7 +4462,7 @@
 							}
 						}
 					],
-					"id": "10497157-78ce10f3-d22f-4031-88bb-555de7bd22b3",
+					"id": "6357799-2507178a-7b94-4d5a-945a-d2f5fb4283f0",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4485,7 +4488,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-95af16bf-9a6a-41e0-8040-f374e80f4c88"
+			"id": "6357799-65f3cbd7-9d11-4026-922e-0cbac2e959dd"
 		},
 		{
 			"name": "Service settings",
@@ -4527,7 +4530,7 @@
 							}
 						}
 					],
-					"id": "10497157-ecbd63f9-19bc-4fda-becd-38067ed3317a",
+					"id": "6357799-e6dc99d7-16f4-4f4a-aa2e-b162c0b536b7",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4586,7 +4589,7 @@
 							}
 						}
 					],
-					"id": "10497157-7ed8259d-36a5-433c-8740-e8e4aaf0b85e",
+					"id": "6357799-77c5f4f8-0366-4e4c-9833-d5a6b6220f44",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4650,7 +4653,7 @@
 							}
 						}
 					],
-					"id": "10497157-d1853b3e-b317-4dfc-a4af-8ee9da42184c",
+					"id": "6357799-fd34b749-8085-483b-a9fe-a89bf719b9aa",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4720,7 +4723,7 @@
 							}
 						}
 					],
-					"id": "10497157-bb7c7666-819f-4630-b740-6b0a4460dfdf",
+					"id": "6357799-69f27183-e6c1-48a5-ac58-47cf91522915",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4779,7 +4782,7 @@
 							}
 						}
 					],
-					"id": "10497157-b72f7821-bafc-44c5-8988-361b50b5e73b",
+					"id": "6357799-215336fc-424d-4f02-9be9-99aa6d8bfdfc",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4845,7 +4848,7 @@
 							}
 						}
 					],
-					"id": "10497157-926749d9-adb8-4543-9b1b-8e1e44ff787c",
+					"id": "6357799-964985f3-4357-4220-b861-02d76c5e0c35",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4915,7 +4918,7 @@
 							}
 						}
 					],
-					"id": "10497157-99f2670e-13d4-47c3-afe8-7c77c2932be0",
+					"id": "6357799-d4c73ff1-a748-455e-8bc0-4abf29657946",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -4941,7 +4944,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-ef888eb5-6500-4686-ae3a-40e624c8ff5f"
+			"id": "6357799-1351dbf9-4879-412a-a741-83eb75f2ff80"
 		},
 		{
 			"name": "Path parameters",
@@ -5012,7 +5015,7 @@
 							}
 						}
 					],
-					"id": "10497157-1cd8c79d-817f-4296-9050-89ffe889e9df",
+					"id": "6357799-0e0cce3e-0d5d-4f22-85c1-7584bcb9d06f",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -5072,7 +5075,7 @@
 							}
 						}
 					],
-					"id": "10497157-a69e0d7b-3ebb-4998-9c23-0d8fdf726efc",
+					"id": "6357799-c926b82d-5eb3-493d-b4d2-a0373586cd9a",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -5112,7 +5115,7 @@
 							}
 						}
 					],
-					"id": "10497157-5fd27abb-23a8-4061-9ee1-f3d61bab7ba3",
+					"id": "6357799-733ff925-a0aa-414e-bf3c-c709895f32c0",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -5167,7 +5170,7 @@
 							}
 						}
 					],
-					"id": "10497157-48e81e14-3386-4b08-91c4-3bf434869b8f",
+					"id": "6357799-125dbe09-f45c-44c1-af68-c801c64b486e",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -5193,7 +5196,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-b78f29c5-dce9-49d8-9c55-7de43d961f09"
+			"id": "6357799-d6e67a53-0190-40cc-a7bd-9ea68a749be6"
 		},
 		{
 			"name": "Endpoint Listing",
@@ -5270,7 +5273,7 @@
 							}
 						}
 					],
-					"id": "10497157-054fda66-0708-4c30-80b4-163dd35f39ef",
+					"id": "6357799-26fe5240-3799-432b-b9cd-d48d4bb88cdc",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -5295,7 +5298,7 @@
 					},
 					"response": [
 						{
-							"id": "10497157-5232ba37-72c7-4a94-bbf7-639eac0750b6",
+							"id": "6357799-e3e2f31c-b480-4e74-aea8-faaa1b2f61fb",
 							"name": "Get Peformance Summaries (200 OK)",
 							"originalRequest": {
 								"method": "POST",
@@ -5438,7 +5441,7 @@
 							}
 						}
 					],
-					"id": "10497157-7911b4c8-1a0f-4e18-b2d1-9d89aeefcff5",
+					"id": "6357799-e4dd9cd0-9cc9-406a-94cd-52b29e0d7747",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -5463,7 +5466,7 @@
 					},
 					"response": [
 						{
-							"id": "10497157-54b98f91-a335-43cd-b20e-d05704a04e5e",
+							"id": "6357799-f206bc35-6352-47d0-8b81-a987f4b70ba8",
 							"name": "Get Peformance Summaries (200 OK)",
 							"originalRequest": {
 								"method": "POST",
@@ -5584,14 +5587,14 @@
 					]
 				}
 			],
-			"id": "10497157-c31ce268-4b85-40d2-bd2b-e82dd16a0894"
+			"id": "6357799-891623bb-d4cb-4813-8ff7-d194af96e708"
 		},
 		{
 			"name": "Team",
 			"item": [
 				{
 					"name": "Get Team Top Endpoints",
-					"id": "10497157-60fc9392-f11b-4ff5-a8a3-2fccc64ccabe",
+					"id": "6357799-86b4b3d4-613b-4098-bb34-c0cf2dccdcda",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -5618,7 +5621,7 @@
 				},
 				{
 					"name": "Get Team Overview",
-					"id": "10497157-df9b4c26-1e56-4a32-ab83-5679c946b10e",
+					"id": "6357799-93fce558-b387-4ad1-86e0-8cd0a11f80e3",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -5665,7 +5668,7 @@
 							}
 						}
 					],
-					"id": "10497157-d62f6c13-0059-4f10-aa20-1be707a90632",
+					"id": "6357799-db9bf5d4-0970-4336-8f83-eb5a784cd930",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -5694,7 +5697,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-af4719b4-6487-48e3-a323-2f163c3bd39a"
+			"id": "6357799-ec8762fc-dc49-4f26-846c-3ede23f181ab"
 		},
 		{
 			"name": "Subscription endpoints",
@@ -5744,7 +5747,7 @@
 							}
 						}
 					],
-					"id": "10497157-1bf4386b-9b4c-46ae-9cd2-981d9bc3c62b",
+					"id": "6357799-2d53027e-c790-4dbc-8c26-6b78bb1fee43",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -5819,7 +5822,7 @@
 							}
 						}
 					],
-					"id": "10497157-d4d473b0-06d7-4fe7-bd7b-88fa5098949d",
+					"id": "6357799-3bc28835-4ac3-488f-a7d0-bd63420f8594",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -5894,7 +5897,7 @@
 							}
 						}
 					],
-					"id": "10497157-58633aba-a93f-4fb5-bf6c-52b3a70ac3c5",
+					"id": "6357799-d83d9c38-95fb-4396-b2bf-ad43bc357ba7",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -5969,7 +5972,7 @@
 							}
 						}
 					],
-					"id": "10497157-c0c09ddb-d865-4cf2-b11d-d547531b9162",
+					"id": "6357799-8eb6681d-88a5-4c71-9874-b34d220549ed",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -6000,7 +6003,7 @@
 					"response": []
 				}
 			],
-			"id": "10497157-a0a099cb-92b9-4193-9e55-85b355b1bd1e"
+			"id": "6357799-36a8ea58-a6fd-4e69-949f-88fd490d868f"
 		}
 	],
 	"auth": {
@@ -6022,7 +6025,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "6920230d-f58e-48a8-888c-766c92c2dfe7",
+				"id": "62208008-0af0-4a5a-80aa-e52b3b113f19",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -6032,7 +6035,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "b43d4fbd-fac8-4b9b-8120-1126a9034333",
+				"id": "9f62f3fe-7e74-4734-b23e-be1ae65176e5",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -6088,26 +6091,6 @@
 		{
 			"key": "endTime",
 			"value": ""
-		},
-		{
-			"key": "socketId",
-			"value": "oeDPyog2VvIg2NUhmnMfJQ",
-			"type": "string"
-		},
-		{
-			"key": "nonexistentServiceId",
-			"value": "svc_0N159iYkn52h2h3IKt501Q",
-			"type": "string"
-		},
-		{
-			"key": "inaccessibleWorkspaceId",
-			"value": "4c4c28b1-3c12-4577-888c-5a0550cd5de9",
-			"type": "string"
-		},
-		{
-			"key": "inaccessibleServiceId",
-			"value": "svc_4xVQHFKYwJjw50F2gk457r",
-			"type": "string"
 		}
 	]
 }
