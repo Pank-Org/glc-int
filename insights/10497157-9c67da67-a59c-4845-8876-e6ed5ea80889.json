@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "10497157-9c67da67-a59c-4845-8876-e6ed5ea80889",
-		"name": "[Beta] Back-end post-deployment tests 123",
+		"name": "[Beta] Back-end post-deployment tests 456",
 		"description": "These tests access Insights APIs via the Bifrost proxy (so that they can be run in any environment.)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
