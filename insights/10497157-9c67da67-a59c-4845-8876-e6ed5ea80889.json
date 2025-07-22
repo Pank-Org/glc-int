@@ -6022,7 +6022,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "6920230d-f58e-48a8-888c-766c92c2dfe7",
+				"id": "ce1b118b-c7a8-4028-afcc-05073923c71d",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -6032,7 +6032,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "b43d4fbd-fac8-4b9b-8120-1126a9034333",
+				"id": "14a2ab46-800d-4cd2-98e2-23878a71eba2",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -6107,6 +6107,11 @@
 		{
 			"key": "inaccessibleServiceId",
 			"value": "svc_4xVQHFKYwJjw50F2gk457r",
+			"type": "string"
+		},
+		{
+			"key": "newVar",
+			"value": "1",
 			"type": "string"
 		}
 	]
