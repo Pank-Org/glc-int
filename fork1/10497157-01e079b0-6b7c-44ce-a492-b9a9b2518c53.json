@@ -24,6 +24,24 @@
 			"response": []
 		},
 		{
+			"name": "R9",
+			"id": "10490000-55caa6f7-f02d-49ed-a242-92f254940000",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "abc",
+					"host": [
+						"abc"
+					]
+				}
+			},
+			"response": []
+		}
+		{
 			"name": "R5",
 			"id": "10497157-8e1cc9b6-5631-4339-8b83-a4913bbb057a",
 			"protocolProfileBehavior": {
