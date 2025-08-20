@@ -1,15 +1,15 @@
 {
 	"info": {
 		"_postman_id": "10497157-5effcb74-1c78-4a38-8c02-39e9ee774417",
-		"name": "C1",
+		"name": "C2",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "F1",
+			"name": "F2",
 			"item": [
 				{
-					"name": "R1",
+					"name": "R2",
 					"id": "10497157-6ef1795a-1d5d-441a-89f3-a19e88a6296b",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
