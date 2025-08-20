@@ -1,0 +1,6118 @@
+{
+	"info": {
+		"_postman_id": "10497157-9c67da67-a59c-4845-8876-e6ed5ea80889",
+		"name": "[Beta] Back-end post-deployment tests 456",
+		"description": "These tests access Insights APIs via the Bifrost proxy (so that they can be run in any environment.)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Insights Overview",
+			"item": [
+				{
+					"name": "insights/overview: 200 OK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f06d097b-92bd-418a-8273-d5b8f93edd63",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"categories\": {",
+									"        \"type\": \"object\"",
+									"      },",
+									"      \"endpoint_data\": {",
+									"        \"type\": \"array\",",
+									"        \"items\": {",
+									"          \"type\": \"object\"",
+									"        }",
+									"      }",
+									"    },",
+									"    \"required\": [\"categories\", \"endpoint_data\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									"",
+									"pm.test(\"Categories schema check\", function () {",
+									"  const ",
+									"    categories = responseBody.categories,",
+									"    schema = {",
+									"      \"type\": \"object\",",
+									"      \"properties\": {",
+									"        \"Endpoints with highest error rate\": {",
+									"          \"$ref\": \"#/definitions/Endpoint\"",
+									"        },",
+									"        \"Endpoints with most errors\": {",
+									"          \"$ref\": \"#/definitions/Endpoint\"",
+									"        },",
+									"        \"Endpoints with new errors\": {",
+									"          \"$ref\": \"#/definitions/Endpoint\"",
+									"        },",
+									"        \"Slowest endpoints\": {",
+									"          \"$ref\": \"#/definitions/Endpoint\"",
+									"        },",
+									"        \"Endpoints with highest volume\": {",
+									"          \"$ref\": \"#/definitions/Endpoint\" ",
+									"        }",
+									"      },",
+									"      \"definitions\": {",
+									"        \"Endpoint\": {",
+									"          \"type\": \"object\",",
+									"          \"properties\": {",
+									"            \"endpoints\": {",
+									"              \"type\": \"array\",",
+									"              \"items\": {",
+									"                \"type\": \"object\",",
+									"                \"properties\": {",
+									"                  \"host\": {",
+									"                    \"type\": \"string\"",
+									"                  },",
+									"                  \"method\": {",
+									"                    \"type\": \"string\"",
+									"                  },",
+									"                  \"path_template\": {",
+									"                    \"type\": \"string\"",
+									"                  }",
+									"                },",
+									"                \"required\": [\"host\", \"method\", \"path_template\"]",
+									"              }",
+									"            }",
+									"          },",
+									"          \"required\": [\"endpoints\"]",
+									"        }",
+									"      },",
+									"      \"required\": [",
+									"        \"Endpoints with highest error rate\",",
+									"        \"Endpoints with most errors\",",
+									"        \"Endpoints with new errors\",",
+									"        \"Slowest endpoints\",",
+									"        \"Endpoints with highest volume\"",
+									"      ]",
+									"    };",
+									"",
+									"  const validationResult = ajv.validate(schema, categories);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Categories schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									"",
+									"pm.test(\"Endpoint_data schema check\", function () {",
+									"  const ",
+									"    endpoint_data = responseBody.endpoint_data,",
+									"    schema = {",
+									"      \"type\": \"array\",",
+									"      \"items\": {",
+									"        \"type\": \"object\",",
+									"        \"properties\": {",
+									"          \"collection_request\": {",
+									"            \"type\": \"object\",",
+									"            \"properties\": {",
+									"              \"id\": {",
+									"                \"type\": \"string\"",
+									"              }",
+									"            }",
+									"          },",
+									"          \"error_count\": {",
+									"            \"type\": \"integer\"",
+									"          },",
+									"          \"error_rate\": {",
+									"            \"type\": [\"number\", \"null\"]",
+									"          },",
+									"          \"host\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"latency_ms_p90\": {",
+									"            \"type\": [\"number\", \"null\"]",
+									"          },",
+									"          \"method\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"path_template\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"request_count\": {",
+									"            \"type\": \"integer\"",
+									"          }",
+									"        },",
+									"        \"required\": [",
+									"          \"collection_request\",",
+									"          \"error_count\",",
+									"          \"error_rate\",",
+									"          \"host\",",
+									"          \"latency_ms_p90\",",
+									"          \"method\",",
+									"          \"path_template\",",
+									"          \"request_count\"",
+									"        ]",
+									"      }",
+									"    };",
+									"",
+									"  const validationResult = ajv.validate(schema, endpoint_data);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Endpoint_data schema validation failed, check console for more details\");",
+									"  }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "09393ed3-ea20-475c-be29-2c6cb75ddffe",
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "10497157-afc1b79d-b6d4-4e41-ba3c-cf2ff5d1d44d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/collections/{{collectionId}}/insights/overview\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "insights/overview: 404 with a valid collection (no access)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f06d097b-92bd-418a-8273-d5b8f93edd63",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "09393ed3-ea20-475c-be29-2c6cb75ddffe",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-a407be25-d78b-4b41-912d-be81ff59dff1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/collections/1060660-0a4a74f8-6cb4-4857-9c49-02449e8a648e/insights/overview\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "insights/overview: 403 forbidden",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5f06a601-eea4-445d-80ab-48542fe4026f",
+								"exec": [
+									"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(403);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "cb18a3bc-c237-4501-8217-8f334d7dee21",
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "10497157-3bb54dba-a762-4c2c-8004-8652b688ca49",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/collections/{{collectionId}}/insights/overview\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "insights/overview: 404 collection not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0a9804d3-2141-4adf-bbcb-3fce0e067663",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1bed556b-9940-4d6e-9939-f60ba7f655c9",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-43d7e910-27f1-41c0-b5e7-d74fb50d9495",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/collections/{{nonexistentCollectionId}}/insights/overview\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-27e13ec2-097b-48bb-871f-ba78dc67b4a6",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						],
+						"id": "c9c5d198-ae3a-49a7-b08e-5832150e4495"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						],
+						"id": "3462fa5f-0ce8-4ace-a7ea-77d1a9e1cc6c"
+					}
+				}
+			]
+		},
+		{
+			"name": "Errors Overview",
+			"item": [
+				{
+					"name": "errors/overview: 200 OK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "54530fde-dda5-433f-bc74-2616bd6968a8",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"endpoints\": {",
+									"        \"type\": \"array\",",
+									"        \"items\": {",
+									"          \"type\": \"object\"",
+									"        }",
+									"      }",
+									"    },",
+									"    \"required\": [\"endpoints\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									"",
+									"pm.test(\"Endpoints schema check\", function () {",
+									"  const ",
+									"    endpoints = responseBody.endpoints,",
+									"    schema = {",
+									"      \"type\": \"array\",",
+									"      \"items\": {",
+									"        \"type\": \"object\",",
+									"        \"properties\": {",
+									"          \"error_code\": {",
+									"            \"type\": \"integer\"",
+									"          },",
+									"          \"error_count\": {",
+									"            \"type\": \"integer\"",
+									"          },",
+									"          \"host\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"last_seen\": {",
+									"            \"type\": \"string\",",
+									"            \"format\": \"date-time\"",
+									"          },",
+									"          \"method\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"path_template\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"time_series\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"              \"type\": \"object\",",
+									"              \"properties\": {",
+									"                \"timestamp\": {",
+									"                  \"type\": \"string\",",
+									"                  \"format\": \"date-time\"",
+									"                },",
+									"                \"value\": {",
+									"                  \"type\": \"integer\"",
+									"                }",
+									"              },",
+									"              \"required\": [\"timestamp\", \"value\"]",
+									"            }",
+									"          }",
+									"        },",
+									"        \"required\": [",
+									"          \"error_code\", ",
+									"          \"error_count\", ",
+									"          \"host\", ",
+									"          \"last_seen\", ",
+									"          \"method\", ",
+									"          \"path_template\", ",
+									"          \"time_series\"",
+									"        ]",
+									"      }",
+									"    };",
+									"",
+									"  const validationResult = ajv.validate(schema, endpoints);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"endpoints schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ee4d5446-e295-4576-a492-37ac213a058c",
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "10497157-92636bc8-f807-4bce-8ee4-fbad8d95cc09",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"GET\",\n  \"path\": \"/v2/collections/{{collectionId}}/errors/overview\",\n  \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "errors/overview: 403 forbidden",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "97ed886d-272d-4f62-a159-561e1d4fe4b6",
+								"exec": [
+									"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(403);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "9508f381-e8fe-4d60-bf61-5ff51009bfa5",
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "10497157-f63be099-6947-4744-9558-28f35de1d058",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"GET\",\n  \"path\": \"/v2/collections/{{collectionId}}/errors/overview\",\n  \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "errors/overview: 404 collection not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c4d5791-a04c-462a-9d67-cff4adf4cff3",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c5727f7a-4a0f-47eb-a8f5-6d836e45e390",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-ae312bcc-deeb-4b93-b282-1a17c2fef26f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"GET\",\n  \"path\": \"/v2/collections/{{nonexistentCollectionId}}/errors/overview\",\n  \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-388d02c5-2635-4302-b972-8a70bebe92e9",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						],
+						"id": "e4d07fb6-a388-4e65-b55e-2d39ffe92fb3"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						],
+						"id": "539e053a-07bf-4110-8940-4bedc4fc33bc"
+					}
+				}
+			]
+		},
+		{
+			"name": "Errors Timeline",
+			"item": [
+				{
+					"name": "errors/timeline: 200 metric type count_error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "86a66ad9-8d88-44ef-8ea7-c9809251b3aa",
+								"exec": [
+									"var",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"endpoints\": {",
+									"        \"type\": \"array\",",
+									"        \"items\": {",
+									"          \"type\": \"object\"",
+									"        }",
+									"      },",
+									"      \"previous_week_boundary\": {",
+									"        \"type\": \"string\",",
+									"        \"format\": \"date-time\"",
+									"      }",
+									"    },",
+									"    \"required\": [\"endpoints\", \"previous_week_boundary\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									"",
+									"pm.test(\"Endpoints schema check\", function () {",
+									"  const ",
+									"    endpoints = responseBody.endpoints,",
+									"    schema = {",
+									"      \"type\": \"array\",",
+									"      \"items\": {",
+									"        \"type\": \"object\",",
+									"        \"properties\": {",
+									"          \"host\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"method\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"path_template\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"time_series\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"              \"type\": \"object\",",
+									"              \"properties\": {",
+									"                \"timestamp\": {",
+									"                  \"type\": \"string\",",
+									"                  \"format\": \"date-time\"",
+									"                },",
+									"                \"value\": {",
+									"                  \"type\": \"object\",",
+									"                  \"properties\": {",
+									"                    \"count\": {",
+									"                      \"type\": \"number\"",
+									"                    },",
+									"                    \"fraction_errors\": {",
+									"                      \"type\": \"number\"",
+									"                    },",
+									"                    \"latency_90p\": {",
+									"                      \"type\": \"number\"",
+									"                    },",
+									"                    \"num_errors\": {",
+									"                      \"type\": \"number\"",
+									"                    }",
+									"                  }",
+									"                }",
+									"              },",
+									"              \"required\": [\"timestamp\", \"value\"]",
+									"            }",
+									"          }",
+									"        },",
+									"        \"required\": [\"host\", \"method\", \"path_template\", \"time_series\"]",
+									"      }",
+									"    };",
+									"",
+									"  const validationResult = ajv.validate(schema, endpoints);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"endpoints schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "092c322b-75a2-4ae5-8a17-c04534fa0621",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-cbb1f6be-a23b-4432-b142-0d2b59592d7d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"POST\",\n  \"path\": \"/v2/collections/{{collectionId}}/errors/timeline\",\n  \"body\": {\n    \"endpoints\": [{\n      \"method\": \"post\",\n      \"host\": \"api.observability.postman-stage.com\",\n      \"path_template\": \"/v1/services/{service}/learn/{arg5}/async_reports\"\n    }],\n    \"metric\": \"COUNT_ERROR\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "errors/timeline: 400 invalid metric",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "86a66ad9-8d88-44ef-8ea7-c9809251b3aa",
+								"exec": [
+									"var responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 400 and content type is JSON stating invalid metric type\", function () {",
+									"  pm.response.to.have.status(400);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"",
+									"  pm.expect(responseBody.akita_code).to.equal(\"BAD_REQUEST\");",
+									"  pm.expect(responseBody.message).to.equal(\"invalid request: invalid metric type\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "092c322b-75a2-4ae5-8a17-c04534fa0621",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-09a68df6-a350-49e7-8e3f-a6232ea0a37d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"POST\",\n  \"path\": \"/v2/collections/{{collectionId}}/errors/timeline\",\n  \"body\": {\n    \"endpoints\": [{\n      \"method\": \"post\",\n      \"host\": \"api.observability.postman-stage.com\",\n      \"path_template\": \"/v1/services/{service}/learn/{arg5}/async_reports\"\n    }],\n    \"metric\": \"INVALID\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "errors/timeline: 200 metric type count_error (1h time range)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "86a66ad9-8d88-44ef-8ea7-c9809251b3aa",
+								"exec": [
+									"var",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 3 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"endpoints\": {",
+									"        \"type\": \"array\",",
+									"        \"items\": {",
+									"          \"type\": \"object\"",
+									"        }",
+									"      },",
+									"      \"previous_week_boundary\": {",
+									"        \"type\": \"string\",",
+									"        \"format\": \"date-time\"",
+									"      }",
+									"    },",
+									"    \"required\": [\"endpoints\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									"",
+									"pm.test(\"Endpoints schema check\", function () {",
+									"  const ",
+									"    endpoints = responseBody.endpoints,",
+									"    schema = {",
+									"      \"type\": \"array\",",
+									"      \"items\": {",
+									"        \"type\": \"object\",",
+									"        \"properties\": {",
+									"          \"host\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"method\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"path_template\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"time_series\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"              \"type\": \"object\",",
+									"              \"properties\": {",
+									"                \"timestamp\": {",
+									"                  \"type\": \"string\",",
+									"                  \"format\": \"date-time\"",
+									"                },",
+									"                \"value\": {",
+									"                  \"type\": \"object\",",
+									"                  \"properties\": {",
+									"                    \"num_errors\": {",
+									"                      \"type\": \"integer\"",
+									"                    }",
+									"                  }",
+									"                }",
+									"              },",
+									"              \"required\": [\"timestamp\", \"value\"]",
+									"            }",
+									"          }",
+									"        },",
+									"        \"required\": [\"host\", \"method\", \"path_template\", \"time_series\"]",
+									"      }",
+									"    };",
+									"",
+									"  const validationResult = ajv.validate(schema, endpoints);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"endpoints schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "092c322b-75a2-4ae5-8a17-c04534fa0621",
+								"exec": [
+									"// Pick a random 1-hour interval within the past two weeks.",
+									"const HOUR_MS = 60*60*1000;",
+									"const TEST_DURATION_MS = HOUR_MS;",
+									"const TWO_WEEKS_MS = 14*24*HOUR_MS;",
+									"",
+									"var endTimeMS = Date.now() - Math.floor(Math.random() * (TWO_WEEKS_MS - TEST_DURATION_MS));",
+									"var startTimeMS = endTimeMS - TEST_DURATION_MS;",
+									"",
+									"pm.collectionVariables.set(",
+									"    \"startTime\",",
+									"    new Date(startTimeMS).toISOString(),",
+									");",
+									"pm.collectionVariables.set(",
+									"    \"endTime\",",
+									"    new Date(endTimeMS).toISOString(),",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-9953eca8-f81e-4efb-9a79-88cb49206120",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"POST\",\n  \"path\": \"/v2/collections/{{collectionId}}/errors/timeline?start_time={{startTime}}&end_time={{endTime}}\",\n  \"body\": {\n    \"endpoints\": [{\n      \"method\": \"post\",\n      \"host\": \"api.observability.postman-stage.com\",\n      \"path_template\": \"/v1/services/{service}/learn/{arg5}/async_reports\"\n    }],\n    \"metric\": \"COUNT_ERROR\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "errors/timeline: 200 metric type count_error (12h time range)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "86a66ad9-8d88-44ef-8ea7-c9809251b3aa",
+								"exec": [
+									"var",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 3 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"endpoints\": {",
+									"        \"type\": \"array\",",
+									"        \"items\": {",
+									"          \"type\": \"object\"",
+									"        }",
+									"      },",
+									"      \"previous_week_boundary\": {",
+									"        \"type\": \"string\",",
+									"        \"format\": \"date-time\"",
+									"      }",
+									"    },",
+									"    \"required\": [\"endpoints\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									"",
+									"pm.test(\"Endpoints schema check\", function () {",
+									"  const ",
+									"    endpoints = responseBody.endpoints,",
+									"    schema = {",
+									"      \"type\": \"array\",",
+									"      \"items\": {",
+									"        \"type\": \"object\",",
+									"        \"properties\": {",
+									"          \"host\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"method\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"path_template\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"time_series\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"              \"type\": \"object\",",
+									"              \"properties\": {",
+									"                \"timestamp\": {",
+									"                  \"type\": \"string\",",
+									"                  \"format\": \"date-time\"",
+									"                },",
+									"                \"value\": {",
+									"                  \"type\": \"object\",",
+									"                  \"properties\": {",
+									"                    \"num_errors\": {",
+									"                      \"type\": \"integer\"",
+									"                    }",
+									"                  }",
+									"                }",
+									"              },",
+									"              \"required\": [\"timestamp\", \"value\"]",
+									"            }",
+									"          }",
+									"        },",
+									"        \"required\": [\"host\", \"method\", \"path_template\", \"time_series\"]",
+									"      }",
+									"    };",
+									"",
+									"  const validationResult = ajv.validate(schema, endpoints);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"endpoints schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "092c322b-75a2-4ae5-8a17-c04534fa0621",
+								"exec": [
+									"// Pick a random 12-hour interval within the past two weeks.",
+									"const HOUR_MS = 60*60*1000;",
+									"const TEST_DURATION_MS = 12*HOUR_MS;",
+									"const TWO_WEEKS_MS = 14*24*HOUR_MS;",
+									"",
+									"var endTimeMS = Date.now() - Math.floor(Math.random() * (TWO_WEEKS_MS - TEST_DURATION_MS));",
+									"var startTimeMS = endTimeMS - TEST_DURATION_MS;",
+									"",
+									"pm.collectionVariables.set(",
+									"    \"startTime\",",
+									"    new Date(startTimeMS).toISOString(),",
+									");",
+									"pm.collectionVariables.set(",
+									"    \"endTime\",",
+									"    new Date(endTimeMS).toISOString(),",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-d05c726f-d176-45ee-a48c-d5c5c825b693",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"POST\",\n  \"path\": \"/v2/collections/{{collectionId}}/errors/timeline?start_time={{startTime}}&end_time={{endTime}}\",\n  \"body\": {\n    \"endpoints\": [{\n      \"method\": \"post\",\n      \"host\": \"api.observability.postman-stage.com\",\n      \"path_template\": \"/v1/services/{service}/learn/{arg5}/async_reports\"\n    }],\n    \"metric\": \"COUNT_ERROR\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "errors/timeline: 200 metric type count_error (1d time range)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "86a66ad9-8d88-44ef-8ea7-c9809251b3aa",
+								"exec": [
+									"var",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 3 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(3000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"endpoints\": {",
+									"        \"type\": \"array\",",
+									"        \"items\": {",
+									"          \"type\": \"object\"",
+									"        }",
+									"      },",
+									"      \"previous_week_boundary\": {",
+									"        \"type\": \"string\",",
+									"        \"format\": \"date-time\"",
+									"      }",
+									"    },",
+									"    \"required\": [\"endpoints\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									"",
+									"pm.test(\"Endpoints schema check\", function () {",
+									"  const ",
+									"    endpoints = responseBody.endpoints,",
+									"    schema = {",
+									"      \"type\": \"array\",",
+									"      \"items\": {",
+									"        \"type\": \"object\",",
+									"        \"properties\": {",
+									"          \"host\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"method\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"path_template\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"time_series\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"              \"type\": \"object\",",
+									"              \"properties\": {",
+									"                \"timestamp\": {",
+									"                  \"type\": \"string\",",
+									"                  \"format\": \"date-time\"",
+									"                },",
+									"                \"value\": {",
+									"                  \"type\": \"object\",",
+									"                  \"properties\": {",
+									"                    \"num_errors\": {",
+									"                      \"type\": \"integer\"",
+									"                    }",
+									"                  }",
+									"                }",
+									"              },",
+									"              \"required\": [\"timestamp\", \"value\"]",
+									"            }",
+									"          }",
+									"        },",
+									"        \"required\": [\"host\", \"method\", \"path_template\", \"time_series\"]",
+									"      }",
+									"    };",
+									"",
+									"  const validationResult = ajv.validate(schema, endpoints);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"endpoints schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "092c322b-75a2-4ae5-8a17-c04534fa0621",
+								"exec": [
+									"// Pick a random 1-day interval within the past two weeks.",
+									"const HOUR_MS = 60*60*1000;",
+									"const TEST_DURATION_MS = 24*HOUR_MS;",
+									"const TWO_WEEKS_MS = 14*24*HOUR_MS;",
+									"",
+									"var endTimeMS = Date.now() - Math.floor(Math.random() * (TWO_WEEKS_MS - TEST_DURATION_MS));",
+									"var startTimeMS = endTimeMS - TEST_DURATION_MS;",
+									"",
+									"pm.collectionVariables.set(",
+									"    \"startTime\",",
+									"    new Date(startTimeMS).toISOString(),",
+									");",
+									"pm.collectionVariables.set(",
+									"    \"endTime\",",
+									"    new Date(endTimeMS).toISOString(),",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-74c962d5-41e7-41c8-8b9c-575472468bc1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"POST\",\n  \"path\": \"/v2/collections/{{collectionId}}/errors/timeline?start_time={{startTime}}&end_time={{endTime}}\",\n  \"body\": {\n    \"endpoints\": [{\n      \"method\": \"post\",\n      \"host\": \"api.observability.postman-stage.com\",\n      \"path_template\": \"/v1/services/{service}/learn/{arg5}/async_reports\"\n    }],\n    \"metric\": \"COUNT_ERROR\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "errors/timeline: 200 metric type fraction_error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "abe7273c-dd68-472e-9f5d-3910a7d3df30",
+								"exec": [
+									"var",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"endpoints\": {",
+									"        \"type\": \"array\",",
+									"        \"items\": {",
+									"          \"type\": \"object\"",
+									"        }",
+									"      },",
+									"      \"previous_week_boundary\": {",
+									"        \"type\": \"string\",",
+									"        \"format\": \"date-time\"",
+									"      }",
+									"    },",
+									"    \"required\": [\"endpoints\", \"previous_week_boundary\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									"",
+									"pm.test(\"Endpoints schema check\", function () {",
+									"  const ",
+									"    endpoints = responseBody.endpoints,",
+									"    schema = {",
+									"      \"type\": \"array\",",
+									"      \"items\": {",
+									"        \"type\": \"object\",",
+									"        \"properties\": {",
+									"          \"host\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"method\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"path_template\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"time_series\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"              \"type\": \"object\",",
+									"              \"properties\": {",
+									"                \"timestamp\": {",
+									"                  \"type\": \"string\",",
+									"                  \"format\": \"date-time\"",
+									"                },",
+									"                \"value\": {",
+									"                  \"type\": \"object\",",
+									"                  \"properties\": {",
+									"                    \"fraction_errors\": {",
+									"                      \"type\": \"number\"",
+									"                    }",
+									"                  }",
+									"                }",
+									"              },",
+									"              \"required\": [\"timestamp\", \"value\"]",
+									"            }",
+									"          }",
+									"        },",
+									"        \"required\": [\"host\", \"method\", \"path_template\", \"time_series\"]",
+									"      }",
+									"    };",
+									"",
+									"  const validationResult = ajv.validate(schema, endpoints);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"endpoints schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "9317df9d-54cd-488e-b732-9c6b1a69d169",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-eb1a69e5-e2af-4941-9b8e-3700fedf38c4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"POST\",\n  \"path\": \"/v2/collections/{{collectionId}}/errors/timeline\",\n  \"body\": {\n    \"endpoints\": [{\n      \"method\": \"post\",\n      \"host\": \"api.observability.postman-stage.com\",\n      \"path_template\": \"/v1/services/{service}/learn/{arg5}/async_reports\"\n    }],\n    \"metric\": \"FRACTION_ERROR\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "errors/timeline: 200 metric type latency_p90",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "87183562-9dfe-4b3d-98ad-4c2062c3bdb6",
+								"exec": [
+									"var",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"endpoints\": {",
+									"        \"type\": \"array\",",
+									"        \"items\": {",
+									"          \"type\": \"object\"",
+									"        }",
+									"      },",
+									"      \"previous_week_boundary\": {",
+									"        \"type\": \"string\",",
+									"        \"format\": \"date-time\"",
+									"      }",
+									"    },",
+									"    \"required\": [\"endpoints\", \"previous_week_boundary\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									"",
+									"pm.test(\"Endpoints schema check\", function () {",
+									"  const ",
+									"    endpoints = responseBody.endpoints,",
+									"    schema = {",
+									"      \"type\": \"array\",",
+									"      \"items\": {",
+									"        \"type\": \"object\",",
+									"        \"properties\": {",
+									"          \"host\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"method\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"path_template\": {",
+									"            \"type\": \"string\"",
+									"          },",
+									"          \"time_series\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"              \"type\": \"object\",",
+									"              \"properties\": {",
+									"                \"timestamp\": {",
+									"                  \"type\": \"string\",",
+									"                  \"format\": \"date-time\"",
+									"                },",
+									"                \"value\": {",
+									"                  \"type\": \"object\",",
+									"                  \"properties\": {",
+									"                    \"latency_90p\": {",
+									"                      \"type\": \"number\"",
+									"                    },",
+									"                    \"rtt_90p\": {",
+									"                      \"type\": \"number\"",
+									"                    }",
+									"                  }",
+									"                }",
+									"              },",
+									"              \"required\": [\"timestamp\", \"value\"]",
+									"            }",
+									"          }",
+									"        },",
+									"        \"required\": [\"host\", \"method\", \"path_template\", \"time_series\"]",
+									"      }",
+									"    };",
+									"",
+									"  const validationResult = ajv.validate(schema, endpoints);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"endpoints schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "99a8ceac-86cd-42b6-8434-c44df41b6088",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-8cd230aa-c687-4b65-bac0-9da6a78f292f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"POST\",\n  \"path\": \"/v2/collections/{{collectionId}}/errors/timeline\",\n  \"body\": {\n    \"endpoints\": [{\n      \"method\": \"post\",\n      \"host\": \"api.observability.postman-stage.com\",\n      \"path_template\": \"/v1/services/{service}/learn/{arg5}/async_reports\"\n    }],\n    \"metric\": \"LATENCY_P90\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "errors/timeline: 403 forbidden",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "eabe0980-c1ad-4692-8de7-682f9d6506be",
+								"exec": [
+									"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(403);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ca62179b-ba75-46ea-9afb-7a0d668b4804",
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "10497157-f3884c43-a883-4b60-95fa-e037c8dbc0bf",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"POST\",\n  \"path\": \"/v2/collections/{{collectionId}}/errors/timeline\",\n  \"body\": {\n    \"endpoints\": [{\n      \"method\": \"post\",\n      \"host\": \"api.observability.postman-stage.com\",\n      \"path_template\": \"/v1/services/{service}/learn/{arg5}/async_reports\"\n    }],\n    \"metric\": \"LATENCY_P90\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "errors/timeline: 404 collection not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c5f65ae4-be71-4854-8b7a-b74d12846292",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1baf2aca-6c56-4725-80f6-b6e016eeb472",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-b26e56ad-e358-43b7-9240-b7e54f7bdde0",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"POST\",\n  \"path\": \"/v2/collections/{{nonexistentCollectionId}}/errors/timeline\",\n  \"body\": {\n    \"endpoints\": [{\n      \"method\": \"post\",\n      \"host\": \"api.observability.postman-stage.com\",\n      \"path_template\": \"/v1/services/{service}/learn/{arg5}/async_reports\"\n    }],\n    \"metric\": \"COUNT_ERROR\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-c6de9875-ba9e-42d9-87bb-9ea93f8a07f7"
+		},
+		{
+			"name": "Telemetry",
+			"item": [
+				{
+					"name": "Client Running Count",
+					"item": [
+						{
+							"name": "client/count-running: 200 OK",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "bc0fdd05-c4d3-4340-9a80-44175b9327f0",
+										"exec": [
+											"var responseBody = pm.response.json();",
+											"",
+											"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+											"  pm.response.to.have.status(200);",
+											"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"",
+											"  pm.expect(responseBody).to.have.property(\"count\")",
+											"  pm.expect(responseBody.count).to.be.a(\"number\")",
+											"});",
+											"",
+											"pm.test(\"Response time should be less than 30 seconds\", function () {",
+											"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "2b115ee6-86a5-46e5-afaa-399a0a2b5d42",
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"id": "10497157-c68dc65c-732b-497b-8316-493316418f17",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"GET\",\n  \"path\": \"/v2/collections/{{collectionId}}/telemetry/client/count-running\",\n  \"body\": {}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}",
+									"host": [
+										"{{baseUrl}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "client/count-running: 403 forbidden",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "265537ce-d9ca-49e4-82b3-9e83dbb0fe30",
+										"exec": [
+											"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+											"  pm.response.to.have.status(403);",
+											"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"pm.test(\"Response time should be less than 30 seconds\", function () {",
+											"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "a64c22ef-1cb4-45c0-bfac-b5fed6342cb7",
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "10497157-a1b75ec0-6a66-4390-9289-5445af328435",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"GET\",\n  \"path\": \"/v2/collections/{{collectionId}}/telemetry/client/count-running\",\n  \"body\": {}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}",
+									"host": [
+										"{{baseUrl}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "client/count-running: 404 collection not found",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "68eadeca-c46a-4416-be25-bfe6ea83f709",
+										"exec": [
+											"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+											"  pm.response.to.have.status(404);",
+											"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"pm.test(\"Response time should be less than 30 seconds\", function () {",
+											"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "a8402431-330e-42e8-96ac-6f9bd843f8da",
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"id": "10497157-b2bd76cd-3415-473b-af25-3d99f8aa256a",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/collections/{{nonexistentCollectionId}}/telemetry/client/count-running\",\n    \"body\": {}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}",
+									"host": [
+										"{{baseUrl}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "10497157-4f034309-be0f-4a1b-9bbe-2159dfd100ff"
+				},
+				{
+					"name": "Client Telemetry Data",
+					"item": [
+						{
+							"name": "telemetry/client: 200 OK",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c597197e-a944-49c1-b17b-d028c0ce2e73",
+										"exec": [
+											"var",
+											"  Ajv = require('ajv'),",
+											"  ajv = new Ajv({ logger: console, allErrors: true }),",
+											"  responseBody = pm.response.json();",
+											"",
+											"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+											"  pm.response.to.have.status(200);",
+											"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"pm.test(\"Response time should be less than 30 seconds\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+											"});",
+											"",
+											"pm.test(\"Response body schema check\", function () {",
+											"  const schema = {",
+											"    \"type\": \"object\",",
+											"    \"properties\": {",
+											"      \"stats\": {",
+											"        \"type\": \"array\",",
+											"        \"items\": {",
+											"          \"type\": \"object\"",
+											"        }",
+											"      }",
+											"    },",
+											"    \"required\": [\"stats\"]",
+											"  };",
+											"",
+											"  const validationResult = ajv.validate(schema, responseBody);",
+											"  if (!validationResult) {",
+											"    console.error(ajv.errors);",
+											"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+											"  }",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "454f016c-a974-46fa-a6d9-4f2ad8ad1e1f",
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "10497157-3d256887-af8e-442e-a3dc-62c5b0a2821a",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"GET\",\n  \"path\": \"/v2/collections/{{collectionId}}/telemetry/client\",\n  \"body\": {}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}",
+									"host": [
+										"{{baseUrl}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "telemetry/client: 200 OK Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c597197e-a944-49c1-b17b-d028c0ce2e73",
+										"exec": [
+											"var",
+											"  Ajv = require('ajv'),",
+											"  ajv = new Ajv({ logger: console, allErrors: true }),",
+											"  responseBody = pm.response.json();",
+											"",
+											"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+											"  pm.response.to.have.status(200);",
+											"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"pm.test(\"Response time should be less than 30 seconds\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+											"});",
+											"",
+											"pm.test(\"Response body schema check\", function () {",
+											"  const schema = {",
+											"    \"type\": \"object\",",
+											"    \"properties\": {",
+											"      \"stats\": {",
+											"        \"type\": \"array\",",
+											"        \"items\": {",
+											"          \"type\": \"object\"",
+											"        }",
+											"      }",
+											"    },",
+											"    \"required\": [\"stats\"]",
+											"  };",
+											"",
+											"  const validationResult = ajv.validate(schema, responseBody);",
+											"  if (!validationResult) {",
+											"    console.error(ajv.errors);",
+											"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+											"  }",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "454f016c-a974-46fa-a6d9-4f2ad8ad1e1f",
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "10497157-885318b9-f441-4370-a948-14dccac8a642",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"GET\",\n  \"path\": \"/v2/collections/{{collectionId}}/telemetry/client\",\n  \"body\": {}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}",
+									"host": [
+										"{{baseUrl}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "telemetry/client: 403 forbidden",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "83ad4c84-ade4-4b79-9a9a-a659ace9d67f",
+										"exec": [
+											"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+											"  pm.response.to.have.status(403);",
+											"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"pm.test(\"Response time should be less than 30 seconds\", function () {",
+											"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "d484a1ab-4ea8-4932-bbf3-78db0bb37d18",
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "10497157-ca5c9f76-24ab-458b-80b0-1dd3eabfdd2c",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"GET\",\n  \"path\": \"/v2/collections/{{collectionId}}/telemetry/client\",\n  \"body\": {}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}",
+									"host": [
+										"{{baseUrl}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "telemetry/client: 404 collection not found",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "53b457cd-a82c-4bb1-a26e-7f4924105d7d",
+										"exec": [
+											"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+											"  pm.response.to.have.status(404);",
+											"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"",
+											"pm.test(\"Response time should be less than 30 seconds\", function () {",
+											"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "b3ed4c0c-fd55-4829-9b62-807449b19c00",
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"id": "10497157-99136f55-d4fa-41ff-8506-dfb1c8773e38",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/collections/{{nonexistentCollectionId}}/telemetry/client\",\n    \"body\": {}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}",
+									"host": [
+										"{{baseUrl}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "10497157-d59c0f36-9a11-4957-8902-f491d209c3ec"
+				}
+			],
+			"id": "10497157-1e46d549-7f67-4577-855e-889c3ff8dfef"
+		},
+		{
+			"name": "Edit a Service",
+			"item": [
+				{
+					"name": "services/{service_id}: 200 OK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8fff1d7f-8e47-4e00-a7a1-239ccc673cc3",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"created_at\": {",
+									"        \"type\": \"string\"",
+									"      },",
+									"      \"id\": {",
+									"        \"type\": \"string\"",
+									"      },",
+									"      \"name\": {",
+									"        \"type\": \"string\"",
+									"      }",
+									"    },",
+									"    \"required\": [\"created_at\", \"id\", \"name\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									"",
+									"pm.test(\"Name updated\", function () {",
+									"  pm.expect(responseBody.name).to.equal(\"Stage - Front\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "be95e5fa-adf3-4436-a7ce-6d2c80bf1230",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-1566447f-b8ab-4ac0-930c-ef5104f910b9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"PATCH\",\n    \"path\": \"/v2/services/{{serviceId}}\",\n    \"body\": {\n      \"name\": \"Stage - Front\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "services/{service_id}: 403 access denied",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8fff1d7f-8e47-4e00-a7a1-239ccc673cc3",
+								"exec": [
+									"var responseBody = pm.response.json();",
+									"",
+									"// FIXME: should be 404?",
+									"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(403);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "be95e5fa-adf3-4436-a7ce-6d2c80bf1230",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-0ab17c48-d86a-49a5-afe3-4e5c4fd21663",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"PATCH\",\n    \"path\": \"/v2/services/{{inaccessibleServiceId}}\",\n    \"body\": {\n      \"name\": \"Should not succeed\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "services/{service_id}: 403 forbidden",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8fff1d7f-8e47-4e00-a7a1-239ccc673cc3",
+								"exec": [
+									"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(403);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "91cd5f15-5112-4168-b323-eedad186b143",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-1c04cad3-e4f1-4881-bb44-ff510b3417f2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"PATCH\",\n    \"path\": \"/v2/services/{{serviceId}}\",\n    \"body\": {\n      \"name\": \"Akita services (stage)\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "services/{service_id}: 404 service not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8fff1d7f-8e47-4e00-a7a1-239ccc673cc3",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "91cd5f15-5112-4168-b323-eedad186b143",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-09230752-5cc6-49f2-9a43-ac1370175f75",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"PATCH\",\n    \"path\": \"/v2/services/svc_0N159iYkn52h2h3IKt501Q\",\n    \"body\": {\n      \"name\": \"Akita services (stage)\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-8c09cb2a-f6b2-41c4-b833-0f4847e890be"
+		},
+		{
+			"name": "List curated collections",
+			"item": [
+				{
+					"name": "/{service_id}/collections: 200 OK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6b47caf3-8e6d-48ae-962c-8c93d9e906df",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"collections\": {",
+									"        \"type\": \"array\",",
+									"        \"items\": {",
+									"          \"type\": \"object\",",
+									"          \"properties\": {",
+									"            \"collection_id\": {",
+									"              \"type\": \"string\"",
+									"            }",
+									"          },",
+									"          \"required\": [\"collection_id\"]",
+									"        }",
+									"      }",
+									"    },",
+									"    \"required\": [\"collections\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7853e664-01c8-4ec1-b447-3c5462cb5fa3",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-2387b862-b3b7-4837-a045-76229ca72d72",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/collections\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/collections: 403 forbidden",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6b47caf3-8e6d-48ae-962c-8c93d9e906df",
+								"exec": [
+									"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(403);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7853e664-01c8-4ec1-b447-3c5462cb5fa3",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-7aa84281-7d83-4d22-8288-58db46855b25",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/collections\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/collections: 404 service not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6b47caf3-8e6d-48ae-962c-8c93d9e906df",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7853e664-01c8-4ec1-b447-3c5462cb5fa3",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-7518e561-534b-4aa4-bc01-89cf33e00a5c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{nonexistentServiceId}}/collections\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/collections: 404 access denied",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6b47caf3-8e6d-48ae-962c-8c93d9e906df",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7853e664-01c8-4ec1-b447-3c5462cb5fa3",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-21e5e434-3351-45f4-bc25-9fef6c76999c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{inaccessibleServiceId}}/collections\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{workspace_id}/collections: 200 OK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6b47caf3-8e6d-48ae-962c-8c93d9e906df",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"curated_collections\": {",
+									"        \"type\": \"array\",",
+									"        \"items\": {",
+									"          \"type\": \"object\",",
+									"          \"properties\": {",
+									"            \"collection_id\": {",
+									"              \"type\": \"string\"",
+									"            },",
+									"            \"service_id\": {",
+									"              \"type\": \"string\"",
+									"            }",
+									"          },",
+									"          \"required\": [\"service_id\",\"collection_id\"]",
+									"        }",
+									"      }",
+									"    },",
+									"    \"required\": [\"curated_collections\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7853e664-01c8-4ec1-b447-3c5462cb5fa3",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-cef32624-e2ea-4ae5-87a6-4d68cd6cbe50",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/workspaces/{{workspaceId}}/curated-collections\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-5dac615a-d2e3-4a77-8086-e9289315de4d"
+		},
+		{
+			"name": "Get service endpoints",
+			"item": [
+				{
+					"name": "/{service_id}/endpoints: 200 OK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3220fd37-6b9d-471f-8d5c-5576c1d942a7",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"endpoint_data\": {",
+									"        \"type\": \"array\",",
+									"        \"items\": {",
+									"          \"type\": \"object\",",
+									"          \"properties\": {",
+									"            \"endpoint\": {",
+									"              \"type\": \"object\",",
+									"              \"properties\": {",
+									"                \"host\": { \"type\": \"string\" },",
+									"                \"method\": { \"type\": \"string\" },",
+									"                \"path_template\": { \"type\": \"string\" }",
+									"              },",
+									"              \"required\": [\"host\", \"method\", \"path_template\"]",
+									"            },",
+									"            \"performance\": {",
+									"              \"type\": \"object\",",
+									"              \"properties\": {",
+									"                \"error_breakdown\": { \"type\": \"object\" },",
+									"                \"latency_ms_p90\": { \"type\": [\"number\", \"null\"] },",
+									"                \"num_4xx\": { \"type\": \"integer\" },",
+									"                \"num_5xx\": { \"type\": \"integer\" },",
+									"                \"request_count\": { \"type\": \"integer\" }",
+									"              },",
+									"              \"required\": [\"error_breakdown\", \"latency_ms_p90\", \"num_4xx\", \"num_5xx\", \"request_count\"]",
+									"            }",
+									"          },",
+									"          \"required\": [\"endpoint\", \"performance\"]",
+									"        }",
+									"      },",
+									"      \"next_offset\": { \"type\": \"integer\" },",
+									"      \"num_endpoints_in_project\": { \"type\": \"integer\" },",
+									"      \"summary\": {",
+									"        \"type\": \"object\",",
+									"        \"properties\": {",
+									"          \"endpoint_categories\": { \"type\": \"object\" },",
+									"          \"hosts\": { \"type\": \"object\" },",
+									"          \"http_methods\": { \"type\": \"object\" },",
+									"          \"paths\": { \"type\": \"object\" },",
+									"          \"response_codes\": { \"type\": \"object\" }",
+									"        },",
+									"        \"required\": [\"endpoint_categories\", \"hosts\", \"http_methods\", \"paths\", \"response_codes\"]",
+									"      },",
+									"      \"total_count\": { \"type\": \"integer\" },",
+									"      \"total_requests\": { \"type\": \"integer\" }",
+									"    },",
+									"    \"required\": [\"endpoint_data\", \"next_offset\", \"num_endpoints_in_project\", \"summary\", \"total_count\", \"total_requests\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "769d9671-9823-4c16-ae14-080e966eb22d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-3faf8839-b570-408b-8f38-c930b5fecff0",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/endpoints\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/endpoints: 404 inaccessible",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3220fd37-6b9d-471f-8d5c-5576c1d942a7",
+								"exec": [
+									"var responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "769d9671-9823-4c16-ae14-080e966eb22d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-a95e6322-29b6-4df3-821e-9aa484a83614",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{inaccessibleServiceId}}/endpoints\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/endpoints: 403 forbidden",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3220fd37-6b9d-471f-8d5c-5576c1d942a7",
+								"exec": [
+									"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(403);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "769d9671-9823-4c16-ae14-080e966eb22d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-550c479a-3fc5-457e-a4b6-1261203001a2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/endpoints\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/endpoints: 404 service not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3220fd37-6b9d-471f-8d5c-5576c1d942a7",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "769d9671-9823-4c16-ae14-080e966eb22d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-54677999-859c-43fd-a13d-012fc483710d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/svc_0N159iYkn52h2h3IKt501Q/endpoints\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-ccfe83c9-da5d-4ef1-a5cc-26b11d2c8a08"
+		},
+		{
+			"name": "Get service Errors",
+			"item": [
+				{
+					"name": "/{service_id}/errors/overview: 200 OK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3220fd37-6b9d-471f-8d5c-5576c1d942a7",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"        \"endpoint_data\": {",
+									"            \"type\": \"array\",",
+									"            \"items\": {",
+									"                \"type\": \"object\",",
+									"                \"properties\": {",
+									"                    \"endpoint\": {",
+									"                        \"type\": \"object\",",
+									"                        \"properties\": {",
+									"                            \"host\": { \"type\": \"string\" },",
+									"                            \"method\": { \"type\": \"string\" },",
+									"                            \"path_template\": { \"type\": \"string\" }",
+									"                        },",
+									"                        \"required\": [\"host\", \"method\", \"path_template\"]",
+									"                    },",
+									"                    \"error_metrics\": {",
+									"                        \"type\": \"object\",",
+									"                        \"properties\": {",
+									"                            \"error_code\": {\"type\": \"integer\"},",
+									"                            \"error_count\": {\"type\": \"integer\"},",
+									"                            \"error_rate\": {\"type\": \"number\"},",
+									"                            \"total_count\": {\"type\": \"integer\"}",
+									"                        },",
+									"                        \"required\": [\"error_code\",\"error_count\",\"error_rate\",\"total_count\"]",
+									"                    },",
+									"                    \"last_seen\": {",
+									"                        \"type\":\"string\",",
+									"                        \"format\": \"date-time\"",
+									"                    },",
+									"                    \"time_series\": {",
+									"                        \"type\": \"array\",",
+									"                        \"items\": {",
+									"                            \"type\": \"object\",",
+									"                            \"properties\": {",
+									"                                \"timestamp\": {",
+									"                                    \"type\": \"string\",",
+									"                                    \"format\": \"date-time\"",
+									"                                },",
+									"                                \"value\": {\"type\":\"integer\"}",
+									"                            },",
+									"                            \"required\": [\"timestamp\",\"value\"]",
+									"                        }",
+									"                    }",
+									"                },",
+									"                \"required\": [\"endpoint\",\"error_metrics\",\"last_seen\",\"time_series\"]            ",
+									"            },",
+									"        },",
+									"        \"next_offset\": { \"type\": \"integer\" },",
+									"        \"total_count\": { \"type\": \"integer\" },",
+									"        \"summary\": {",
+									"            \"type\": \"object\",",
+									"            \"properties\": {",
+									"                \"endpoint_categories\": { \"type\": \"object\" },",
+									"                \"hosts\": { \"type\": \"object\" },",
+									"                \"http_methods\": { \"type\": \"object\" },",
+									"                \"paths\": { \"type\": \"object\" },",
+									"                \"response_codes\": { \"type\": \"object\" }",
+									"            },",
+									"            \"required\": [\"endpoint_categories\", \"hosts\", \"http_methods\", \"paths\", \"response_codes\"]",
+									"        }",
+									"    },    ",
+									"    \"required\": [\"endpoint_data\", \"next_offset\", \"summary\",\"total_count\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "769d9671-9823-4c16-ae14-080e966eb22d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-15a5040d-4fb6-46c0-91e0-aa82d59339cc",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/errors/overview\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/errors/overview: 200 OK Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3220fd37-6b9d-471f-8d5c-5576c1d942a7",
+								"exec": [
+									"var responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "769d9671-9823-4c16-ae14-080e966eb22d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-134ee400-8259-49a1-a234-26486a233daf",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{inaccessibleServiceId}}/errors/overview\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/errors/overview: 403 forbidden",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3220fd37-6b9d-471f-8d5c-5576c1d942a7",
+								"exec": [
+									"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(403);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "769d9671-9823-4c16-ae14-080e966eb22d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-2384ce57-9b0b-45cc-a874-47a1a824d095",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/errors/overview\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/errors/overview: 404 service not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3220fd37-6b9d-471f-8d5c-5576c1d942a7",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "769d9671-9823-4c16-ae14-080e966eb22d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-72f75993-db2e-40c4-8e8c-be688438d936",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/svc_0N159iYkn52h2h3IKt501Q/errors/overview\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-0f282033-840d-4a29-8164-04304d868fe7"
+		},
+		{
+			"name": "Get repo mode list",
+			"item": [
+				{
+					"name": "/{service_id}/repro/list with no end time: 200 OK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3220fd37-6b9d-471f-8d5c-5576c1d942a7",
+								"exec": [
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"pm.test(\"Extract timestamp and witness_token from response\", function () {",
+									"    var response = pm.response.json();",
+									"    pm.collectionVariables.set(\"timestamp\", response.calls[0].timestamp);",
+									"    pm.collectionVariables.set(\"witness_token\", response.calls[0].witness_token);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "769d9671-9823-4c16-ae14-080e966eb22d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-f96b4d7d-de7a-45cc-8c66-c2853f98686d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/repro/list?offset=0&method=POST&host=api-observe.postman-stage.tech&path=%2Fv2%2Fworkspaces%2Fsubscribe\",\n    \"body\": {}\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/repro/list: 404 inaccessible",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3220fd37-6b9d-471f-8d5c-5576c1d942a7",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "769d9671-9823-4c16-ae14-080e966eb22d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-b228b764-d716-4ece-9c2b-839a9a4ebd82",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{inaccessibleServiceId}}/repro/list?offset=0&method=GET&host=api-observe.postman-stage.tech&path=%2Fv2%2Fservices%2F{service}%2fcollections\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/repro/list with current time as end time: 200 OK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3220fd37-6b9d-471f-8d5c-5576c1d942a7",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "769d9671-9823-4c16-ae14-080e966eb22d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-e972caa8-b042-445d-b445-9102d333c656",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/repro/list?offset=0&method=GET&host=api-observe.postman-stage.tech&path=%2Fv2%2Fservices%2F{service}%2fcollections&end_time={{$isoTimestamp}}\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-dcd35638-0618-439f-b7ee-ec355e617eeb"
+		},
+		{
+			"name": "Get New Relic log URL",
+			"item": [
+				{
+					"name": "/{service_id}/integrations/nr-logs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3220fd37-6b9d-471f-8d5c-5576c1d942a7",
+								"exec": [
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"pm.test(\"Get URL object from response and validate with regex\", function () {",
+									"    const responseBody = pm.response.json();",
+									"    const url = responseBody.integrations.nr_log.url;",
+									"     // Validate URL with custom regex. It will check for host, path and exactly 4 query params",
+									"    pm.expect(url).to.match(/^https:\\/\\/one\\.newrelic\\.com\\/launcher\\/logger\\.log-launcher\\?([^=]*=[^=]*=[^=]*=[^=]*=[^=]*$)/);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "769d9671-9823-4c16-ae14-080e966eb22d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-77590b99-58d6-4350-8e60-e7eecee5e287",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/integrations/nr-logs?timestamp={{timestamp}}&witness_token={{witness_token}}\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/integrations/nr-logs: 404 inaccessible",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3220fd37-6b9d-471f-8d5c-5576c1d942a7",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "769d9671-9823-4c16-ae14-080e966eb22d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-a9c3f03a-f96c-4027-bcf4-f8729d6d15fa",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{inaccessibleServiceId}}/integrations/nr-logs?timestamp={{timestamp}}&witness_token={{witness_token}}\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/integrations/nr-logs: 403 forbidden",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3220fd37-6b9d-471f-8d5c-5576c1d942a7",
+								"exec": [
+									"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+									"    pm.response.to.have.status(403);",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "769d9671-9823-4c16-ae14-080e966eb22d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-b538f398-54c3-4895-a76e-f3a56f307321",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/integrations/nr-logs?timestamp={{timestamp}}&witness_token={{witness_token}}\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-4ca8b21d-4d32-4c31-b2bb-dddd70eda454"
+		},
+		{
+			"name": "Get Agent status",
+			"item": [
+				{
+					"name": "/{service_id}/agent-status: 200 OK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "87c7a2e5-0027-4743-b814-8cbf06976033",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"agent_status_summary\": {",
+									"        \"type\": \"string\"",
+									"      },",
+									"      \"agents\": {",
+									"        \"type\": \"array\",",
+									"        \"items\": {",
+									"          \"type\": \"object\",",
+									"          \"properties\": {",
+									"            \"agent_connection_state\": {\"type\": \"string\"},",
+									"            \"agent_capture_status\": {\"type\": \"string\"},",
+									"            \"debug_detail\": {\"type\": [\"string\", \"null\"]}, ",
+									"            \"client_id\": {\"type\": \"string\"}, ",
+									"            \"observed_starting_at\": {\"type\": \"string\"}, ",
+									"            \"edit_time\":  {\"type\": \"string\"}, ",
+									"            \"packet_count_summary\": {\"type\": \"object\"}",
+									"          },",
+									"          \"required\": [\"agent_capture_status\", \"agent_connection_state\", \"debug_detail\", \"client_id\", \"observed_starting_at\", \"edit_time\"]",
+									"        }",
+									"",
+									"      }",
+									"    },",
+									"    \"required\": [\"agent_status_summary\", \"agents\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7f27163a-0629-4a18-b9dd-0c16433cc069",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-d6438e3a-d412-4cca-8dfb-f801ca266b32",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/agent-status\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/agent-status: 404 inaccessible",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "87c7a2e5-0027-4743-b814-8cbf06976033",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7f27163a-0629-4a18-b9dd-0c16433cc069",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-d7eda272-35d5-4480-8aba-18d02b201a5f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{inaccessibleServiceId}}/agent-status\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/agent-status: 403 forbidden",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "87c7a2e5-0027-4743-b814-8cbf06976033",
+								"exec": [
+									"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(403);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7f27163a-0629-4a18-b9dd-0c16433cc069",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-d3517620-7390-4bc1-aed7-0beb51c069a0",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/agent-status\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{service_id}/agent-status: 404 service not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "87c7a2e5-0027-4743-b814-8cbf06976033",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7f27163a-0629-4a18-b9dd-0c16433cc069",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-6c0990e2-b160-440e-8088-0192ecb6009a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{nonexistentServiceId}}/agent-status\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-f3b157d5-5e2e-4517-97d3-8d358279ba92"
+		},
+		{
+			"name": "Get workspace services",
+			"item": [
+				{
+					"name": "/{workspace_id}/services: 200 OK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1021f972-61ea-4bc3-865e-1bb834d55e40",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"services\": {",
+									"        \"type\": \"array\",",
+									"        \"items\": {",
+									"          \"type\": \"object\",",
+									"          \"properties\": {",
+									"            \"name\": {\"type\": \"string\"},",
+									"            \"service_id\": {\"type\": \"string\"}",
+									"          },",
+									"          \"required\": [\"name\", \"service_id\"]",
+									"        }",
+									"      },",
+									"    },",
+									"    \"required\": [\"services\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "017f9f83-fa37-4b04-aa71-f252568f89f1",
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "10497157-48c6e0a7-9561-41e7-8b13-b67f3a33e207",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/workspaces/{{workspaceId}}/services\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{workspace_id}/services: 404 inaccessible",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1021f972-61ea-4bc3-865e-1bb834d55e40",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "017f9f83-fa37-4b04-aa71-f252568f89f1",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-7e59d3fd-ad0c-4bbd-8fd8-5cb2278e41ef",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/workspaces/{{inaccessibleWorkspaceId}}/services\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{workspace_id}/services: 403 forbidden",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "87c7a2e5-0027-4743-b814-8cbf06976033",
+								"exec": [
+									"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(403);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7f27163a-0629-4a18-b9dd-0c16433cc069",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-2ae4f58b-ea45-492c-8aad-131a970b6096",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/workspaces/{{workspaceId}}/services\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/{workspace_id}/services: 404 workspace not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "87c7a2e5-0027-4743-b814-8cbf06976033",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7f27163a-0629-4a18-b9dd-0c16433cc069",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-78ce10f3-d22f-4031-88bb-555de7bd22b3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/workspaces/dddddddd-eeee-7777-aaaa-ffffffffffff/services\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-95af16bf-9a6a-41e0-8040-f374e80f4c88"
+		},
+		{
+			"name": "Service settings",
+			"item": [
+				{
+					"name": "Get settings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a5adacbb-1d15-4c30-ac6a-7d634cb82de7",
+								"exec": [
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"pm.test(\"Show IP Hosts\", function () {",
+									"    pm.expect(pm.response.json()).to.be.an('object');",
+									"    const show_ip_hosts = pm.response.json().show_ip_hosts",
+									"    pm.expect(show_ip_hosts).to.be.a(\"boolean\");",
+									"    pm.collectionVariables.set(\"show_ip_hosts\", show_ip_hosts);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5611e399-c956-4b2b-beb6-1f0099b3e0a2",
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "10497157-ecbd63f9-19bc-4fda-becd-38067ed3317a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/settings\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get settings 404 doesn't exist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a5adacbb-1d15-4c30-ac6a-7d634cb82de7",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5611e399-c956-4b2b-beb6-1f0099b3e0a2",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-7ed8259d-36a5-433c-8740-e8e4aaf0b85e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{nonexistentServiceId}}/settings\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get settings 404 unauthorized",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a5adacbb-1d15-4c30-ac6a-7d634cb82de7",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"// FIXME: POA-3780",
+									"// pm.test(\"Resource ID is null\", function () {",
+									"//     pm.expect(pm.response.json()).to.be.an('object');",
+									"//     pm.expect(pm.response.json().resource_id).to.be.null();",
+									"// });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5611e399-c956-4b2b-beb6-1f0099b3e0a2",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-d1853b3e-b317-4dfc-a4af-8ee9da42184c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{inaccessibleServiceId}}/settings\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update settings",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "576d34ef-0cb6-44b1-ad17-f8bbb1f8bb7a",
+								"exec": [
+									"const show_ip_hosts = pm.collectionVariables.get(\"show_ip_hosts\");",
+									"pm.collectionVariables.set(\"show_ip_hosts\", !show_ip_hosts);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2f6ae17-1ba3-4fa4-828f-19f1941d743a",
+								"exec": [
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"pm.test(\"Show IP Hosts\", function () {",
+									"    pm.expect(pm.response.json()).to.be.an('object');",
+									"    const response_show_ip_hosts = pm.response.json().show_ip_hosts;",
+									"    let original_show_ip_hosts = pm.collectionVariables.get(\"show_ip_hosts\");",
+									"",
+									"    if (typeof original_show_ip_hosts != \"boolean\") {",
+									"      original_show_ip_hosts = JSON.parse(original_show_ip_hosts);",
+									"    }",
+									"    pm.expect(response_show_ip_hosts).to.equal(original_show_ip_hosts);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-bb7c7666-819f-4630-b740-6b0a4460dfdf",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"PATCH\",\n    \"path\": \"/v2/services/{{serviceId}}/settings\",\n    \"body\": {\n      \"show_ip_hosts\": {{show_ip_hosts}}\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update settings 404 doesn't exist",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "576d34ef-0cb6-44b1-ad17-f8bbb1f8bb7a",
+								"exec": [
+									"const show_ip_hosts = pm.collectionVariables.get(\"show_ip_hosts\");",
+									"pm.collectionVariables.set(\"show_ip_hosts\", !show_ip_hosts);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2f6ae17-1ba3-4fa4-828f-19f1941d743a",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(404);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-b72f7821-bafc-44c5-8988-361b50b5e73b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"PATCH\",\n    \"path\": \"/v2/services/{{nonexistentServiceId}}/settings\",\n    \"body\": {\n      \"show_ip_hosts\": true\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update settings 403 unauthorized",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "576d34ef-0cb6-44b1-ad17-f8bbb1f8bb7a",
+								"exec": [
+									"const show_ip_hosts = pm.collectionVariables.get(\"show_ip_hosts\");",
+									"pm.collectionVariables.set(\"show_ip_hosts\", !show_ip_hosts);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a2f6ae17-1ba3-4fa4-828f-19f1941d743a",
+								"exec": [
+									"// FIXME: should be 404",
+									"// pm.test(\"Response code is 403 and content type is JSON\", function () {",
+									"//  pm.response.to.have.status(403);",
+									"//  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"// });",
+									"",
+									"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(403);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-926749d9-adb8-4543-9b1b-8e1e44ff787c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"PATCH\",\n    \"path\": \"/v2/services/{{inaccessibleServiceId}}/settings\",\n    \"body\": {\n      \"show_ip_hosts\": true\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Revert the update",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "01a62070-63ca-4809-93d4-9fb4f2f96368",
+								"exec": [
+									"const show_ip_hosts = pm.collectionVariables.get(\"show_ip_hosts\");",
+									"pm.collectionVariables.set(\"show_ip_hosts\", !show_ip_hosts);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "b935daa7-8990-4682-8e75-b009a2558980",
+								"exec": [
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"pm.test(\"Show IP Hosts\", function () {",
+									"    pm.expect(pm.response.json()).to.be.an('object');",
+									"    const response_show_ip_hosts = pm.response.json().show_ip_hosts;",
+									"    let original_show_ip_hosts = pm.collectionVariables.get(\"show_ip_hosts\");",
+									"",
+									"    if (typeof original_show_ip_hosts != \"boolean\") {",
+									"      original_show_ip_hosts = JSON.parse(original_show_ip_hosts);",
+									"    }",
+									"    pm.expect(response_show_ip_hosts).to.equal(original_show_ip_hosts);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-99f2670e-13d4-47c3-afe8-7c77c2932be0",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"PATCH\",\n    \"path\": \"/v2/services/{{serviceId}}/settings\",\n    \"body\": {\n      \"show_ip_hosts\": {{show_ip_hosts}}\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-ef888eb5-6500-4686-ae3a-40e624c8ff5f"
+		},
+		{
+			"name": "Path parameters",
+			"item": [
+				{
+					"name": "Upsert path param: 201 Created",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9f902e9b-8553-486e-9242-8adfbc2dd592",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 201 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(201);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"exceptions\": { \"type\": [\"null\", \"string\"] },",
+									"      \"host\": { \"type\": \"string\" },",
+									"      \"id\": { \"type\": \"string\" },",
+									"      \"name\": { \"type\": \"string\" },",
+									"      \"path_prefix\": { \"type\": \"string\" },",
+									"      \"regexes\": { \"type\": [\"null\", \"array\"] }",
+									"    },",
+									"    \"required\": [\"exceptions\", \"host\", \"id\", \"name\", \"path_prefix\", \"regexes\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});",
+									"",
+									"pm.test(\"Response values check\", function () {",
+									"  pm.expect(responseBody.host).to.equal(\"api-observe.postman-stage.tech\");",
+									"  pm.expect(responseBody.name).to.equal(\"test\");",
+									"  pm.expect(responseBody.path_prefix).to.equal(\"/abc\");",
+									"  pm.collectionVariables.set(\"path_param_id\", responseBody.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "17637150-710a-47af-bd9e-2de726f2d4a7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-1cd8c79d-817f-4296-9050-89ffe889e9df",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"PUT\",\n    \"path\": \"/v2/services/{{serviceId}}/path-parameters\",\n    \"body\": {\n      \"host\": \"api-observe.postman-stage.tech\",\n      \"path_prefix\": \"/abc\",\n      \"name\": \"test\",\n      \"regexes\": [\".*\"]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upsert path param: 403 inaccessible",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9f902e9b-8553-486e-9242-8adfbc2dd592",
+								"exec": [
+									"// FIXME: should be 404?",
+									"pm.test(\"Response code is 403 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(403);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "17637150-710a-47af-bd9e-2de726f2d4a7",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-a69e0d7b-3ebb-4998-9c23-0d8fdf726efc",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"PUT\",\n    \"path\": \"/v2/services/{{inaccessibleServiceId}}/path-parameters\",\n    \"body\": {\n      \"host\": \"api-observe.postman-stage.tech\",\n      \"path_prefix\": \"/abc\",\n      \"name\": \"test\",\n      \"regexes\": [\".*\"]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get path parameter: 204 No Content",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b7e2b4fd-d294-4661-973a-a5bdad458f3a",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-5fd27abb-23a8-4061-9ee1-f3d61bab7ba3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/path-parameters\",\n    \"query\": {\n      \"host\": \"api-observe.postman-stage.tech\",\n      \"path_prefix\": \"/abc\"\n    },\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete path param",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "420892e3-4788-48d3-8bec-344751226730",
+								"exec": [
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "cdd9b18c-24bc-46d1-b391-03c5e9b3ddd4",
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "10497157-48e81e14-3386-4b08-91c4-3bf434869b8f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"DELETE\",\n    \"path\": \"/v2/services/{{serviceId}}/path-parameters/{{path_param_id}}\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-b78f29c5-dce9-49d8-9c55-7de43d961f09"
+		},
+		{
+			"name": "Endpoint Listing",
+			"item": [
+				{
+					"name": "Get Peformance Summaries",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "882c61ec-54e7-4a16-a535-5f6e79c1f8b8",
+								"exec": [
+									"var Ajv = require('ajv'),",
+									"    ajv = new Ajv({ logger: console, allErrors: true }),",
+									"    responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"    const schema = {",
+									"        \"type\": \"object\",",
+									"        \"properties\": {",
+									"            \"percent_change\": {",
+									"                \"type\": \"object\",",
+									"                \"properties\": {",
+									"                    \"count\": { \"type\": \"number\" },",
+									"                    \"fraction_errors\": { \"type\": \"number\" },",
+									"                    \"latency_90p\": { \"type\": \"number\" },",
+									"                    \"num_errors\": { \"type\": \"number\" }",
+									"                },",
+									"                \"required\": [\"count\", \"fraction_errors\", \"latency_90p\", \"num_errors\"]",
+									"            },",
+									"            \"performance_stats\": {",
+									"                \"type\": \"array\",",
+									"                \"items\": {",
+									"                    \"type\": \"object\",",
+									"                    \"properties\": {",
+									"                        \"end_time\": { \"type\": \"string\", \"format\": \"date-time\" },",
+									"                        \"start_time\": { \"type\": \"string\", \"format\": \"date-time\" },",
+									"                        \"value\": {",
+									"                            \"type\": \"object\",",
+									"                            \"properties\": {",
+									"                                \"count\": { \"type\": \"number\" },",
+									"                                \"fraction_errors\": { \"type\": \"number\" },",
+									"                                \"latency_90p\": { \"type\": \"number\" },",
+									"                                \"num_errors\": { \"type\": \"number\" }",
+									"                            },",
+									"                            \"required\": [\"count\", \"fraction_errors\", \"latency_90p\", \"num_errors\"]",
+									"                        }",
+									"                    },",
+									"                    \"required\": [\"end_time\", \"start_time\", \"value\"]",
+									"                }",
+									"            }",
+									"        },",
+									"        \"required\": [\"percent_change\", \"performance_stats\"]",
+									"    };",
+									"",
+									"    const validationResult = ajv.validate(schema, responseBody);",
+									"    if (!validationResult) {",
+									"        console.error(ajv.errors);",
+									"        pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-054fda66-0708-4c30-80b4-163dd35f39ef",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/insights/performance-summary\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "10497157-5232ba37-72c7-4a94-bbf7-639eac0750b6",
+							"name": "Get Peformance Summaries (200 OK)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/insights/performance-summary\",\n    \"body\": {}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}",
+									"host": [
+										"{{baseUrl}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 13 Jun 2024 22:18:17 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "access-control-allow-credentials",
+									"value": "true"
+								},
+								{
+									"key": "x-dns-prefetch-control",
+									"value": "off"
+								},
+								{
+									"key": "x-frame-options",
+									"value": "DENY"
+								},
+								{
+									"key": "strict-transport-security",
+									"value": "max-age=15552000; includeSubDomains"
+								},
+								{
+									"key": "x-download-options",
+									"value": "noopen"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "x-cache",
+									"value": "Miss from cloudfront"
+								},
+								{
+									"key": "via",
+									"value": "1.1 83e9543a0c721a5a36e6bcd3e84e87c0.cloudfront.net (CloudFront)"
+								},
+								{
+									"key": "x-amz-cf-pop",
+									"value": "ORD56-P4"
+								},
+								{
+									"key": "x-amz-cf-id",
+									"value": "irAQhgUnnQhf_vt2z8_yX_HRfbZn7XLN9ZO4NW0pO0lhYvNKSwuWIg=="
+								},
+								{
+									"key": "server-timing",
+									"value": "cdn-upstream-layer;desc=\"REC\",cdn-upstream-dns;dur=2,cdn-upstream-connect;dur=0,cdn-upstream-fbl;dur=110,request-time;dur=93.930612,cdn-cache-miss,cdn-pop;desc=\"ORD56-P4\",cdn-rid;desc=\"irAQhgUnnQhf_vt2z8_yX_HRfbZn7XLN9ZO4NW0pO0lhYvNKSwuWIg==\",cdn-downstream-fbl;dur=133"
+								},
+								{
+									"key": "CF-Cache-Status",
+									"value": "DYNAMIC"
+								},
+								{
+									"key": "Server",
+									"value": "cloudflare"
+								},
+								{
+									"key": "CF-RAY",
+									"value": "893574a28c911ce8-ORD"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"percent_change\": {\n        \"count\": 1.579489,\n        \"fraction_errors\": 8.25253,\n        \"latency_90p\": -3.0769231,\n        \"num_errors\": 9.962366\n    },\n    \"performance_stats\": [\n        {\n            \"end_time\": \"2024-06-06T21:00:00Z\",\n            \"start_time\": \"2024-05-30T21:00:00Z\",\n            \"value\": {\n                \"count\": 11390519,\n                \"fraction_errors\": 0.019035656,\n                \"latency_90p\": 65,\n                \"num_errors\": 216826\n            }\n        },\n        {\n            \"end_time\": \"2024-06-13T21:00:00Z\",\n            \"start_time\": \"2024-06-06T21:00:00Z\",\n            \"value\": {\n                \"count\": 11570431,\n                \"fraction_errors\": 0.02060658,\n                \"latency_90p\": 63,\n                \"num_errors\": 238427\n            }\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Performance Summaries: 404 inaccessible",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "882c61ec-54e7-4a16-a535-5f6e79c1f8b8",
+								"exec": [
+									"pm.test(\"Response code is 404 and content type is JSON\", function () {",
+									"    pm.response.to.have.status(404);",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(30000);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-7911b4c8-1a0f-4e18-b2d1-9d89aeefcff5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{inaccessibleServiceId}}/insights/performance-summary\",\n    \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "10497157-54b98f91-a335-43cd-b20e-d05704a04e5e",
+							"name": "Get Peformance Summaries (200 OK)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"GET\",\n    \"path\": \"/v2/services/{{serviceId}}/insights/performance-summary\",\n    \"body\": {}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}",
+									"host": [
+										"{{baseUrl}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 13 Jun 2024 22:18:17 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "access-control-allow-credentials",
+									"value": "true"
+								},
+								{
+									"key": "x-dns-prefetch-control",
+									"value": "off"
+								},
+								{
+									"key": "x-frame-options",
+									"value": "DENY"
+								},
+								{
+									"key": "strict-transport-security",
+									"value": "max-age=15552000; includeSubDomains"
+								},
+								{
+									"key": "x-download-options",
+									"value": "noopen"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "x-cache",
+									"value": "Miss from cloudfront"
+								},
+								{
+									"key": "via",
+									"value": "1.1 83e9543a0c721a5a36e6bcd3e84e87c0.cloudfront.net (CloudFront)"
+								},
+								{
+									"key": "x-amz-cf-pop",
+									"value": "ORD56-P4"
+								},
+								{
+									"key": "x-amz-cf-id",
+									"value": "irAQhgUnnQhf_vt2z8_yX_HRfbZn7XLN9ZO4NW0pO0lhYvNKSwuWIg=="
+								},
+								{
+									"key": "server-timing",
+									"value": "cdn-upstream-layer;desc=\"REC\",cdn-upstream-dns;dur=2,cdn-upstream-connect;dur=0,cdn-upstream-fbl;dur=110,request-time;dur=93.930612,cdn-cache-miss,cdn-pop;desc=\"ORD56-P4\",cdn-rid;desc=\"irAQhgUnnQhf_vt2z8_yX_HRfbZn7XLN9ZO4NW0pO0lhYvNKSwuWIg==\",cdn-downstream-fbl;dur=133"
+								},
+								{
+									"key": "CF-Cache-Status",
+									"value": "DYNAMIC"
+								},
+								{
+									"key": "Server",
+									"value": "cloudflare"
+								},
+								{
+									"key": "CF-RAY",
+									"value": "893574a28c911ce8-ORD"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"percent_change\": {\n        \"count\": 1.579489,\n        \"fraction_errors\": 8.25253,\n        \"latency_90p\": -3.0769231,\n        \"num_errors\": 9.962366\n    },\n    \"performance_stats\": [\n        {\n            \"end_time\": \"2024-06-06T21:00:00Z\",\n            \"start_time\": \"2024-05-30T21:00:00Z\",\n            \"value\": {\n                \"count\": 11390519,\n                \"fraction_errors\": 0.019035656,\n                \"latency_90p\": 65,\n                \"num_errors\": 216826\n            }\n        },\n        {\n            \"end_time\": \"2024-06-13T21:00:00Z\",\n            \"start_time\": \"2024-06-06T21:00:00Z\",\n            \"value\": {\n                \"count\": 11570431,\n                \"fraction_errors\": 0.02060658,\n                \"latency_90p\": 63,\n                \"num_errors\": 238427\n            }\n        }\n    ]\n}"
+						}
+					]
+				}
+			],
+			"id": "10497157-c31ce268-4b85-40d2-bd2b-e82dd16a0894"
+		},
+		{
+			"name": "Team",
+			"item": [
+				{
+					"name": "Get Team Top Endpoints",
+					"id": "10497157-60fc9392-f11b-4ff5-a8a3-2fccc64ccabe",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"GET\",\n  \"path\": \"/v2/team/top_endpoints\",\n  \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Team Overview",
+					"id": "10497157-df9b4c26-1e56-4a32-ab83-5679c946b10e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"GET\",\n  \"path\": \"/v2/team/overview\",\n  \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Team Overview: 403 forbidden",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0a4b43fa-a27f-4ab0-9cf5-5e0db5424336",
+								"exec": [
+									"pm.test(\"Response code is 403 and content type is JSON\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time should be less than 30 seconds\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(30000);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-d62f6c13-0059-4f10-aa20-1be707a90632",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": \"akita\",\n  \"method\": \"GET\",\n  \"path\": \"/v2/team/overview\",\n  \"body\": {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-af4719b4-6487-48e3-a323-2f163c3bd39a"
+		},
+		{
+			"name": "Subscription endpoints",
+			"item": [
+				{
+					"name": "Subscribe to workspace events",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c1058b3d-c319-49e0-a3df-8e18ef72f616",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"success\": {",
+									"        \"type\": \"boolean\",",
+									"      },",
+									"    },",
+									"    \"required\": [\"success\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-1bf4386b-9b4c-46ae-9cd2-981d9bc3c62b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-socket-id",
+								"value": "{{socketId}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"POST\",\n    \"path\": \"/v2/workspaces/subscribe\",\n    \"body\": {\n        \"workspace_id\": [\n            \"{{workspaceId}}\"\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscribe to service events",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3b44b35d-981d-4227-a8df-a5981df285eb",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"success\": {",
+									"        \"type\": \"boolean\",",
+									"      },",
+									"    },",
+									"    \"required\": [\"success\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-d4d473b0-06d7-4fe7-bd7b-88fa5098949d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-socket-id",
+								"value": "{{socketId}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"POST\",\n    \"path\": \"/v2/services/subscribe\",\n    \"body\": {\n        \"service_id\": [\n            \"{{serviceId}}\"\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unsubscribe from workspace events",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c042907a-0a90-48f3-becc-bf90e3f821a9",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"success\": {",
+									"        \"type\": \"boolean\",",
+									"      },",
+									"    },",
+									"    \"required\": [\"success\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-58633aba-a93f-4fb5-bf6c-52b3a70ac3c5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-socket-id",
+								"value": "{{socketId}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"POST\",\n    \"path\": \"/v2/workspaces/unsubscribe\",\n    \"body\": {\n        \"workspace_id\": [\n            \"{{workspaceId}}\"\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unsubscribe from service events",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3b44b35d-981d-4227-a8df-a5981df285eb",
+								"exec": [
+									"var ",
+									"  Ajv = require('ajv'),",
+									"  ajv = new Ajv({ logger: console, allErrors: true }),",
+									"  responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200 and content type is JSON\", function () {",
+									"  pm.response.to.have.status(200);",
+									"  pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Response time should be less than 10 seconds\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(10000);",
+									"});",
+									"",
+									"pm.test(\"Response body schema check\", function () {",
+									"  const schema = {",
+									"    \"type\": \"object\",",
+									"    \"properties\": {",
+									"      \"success\": {",
+									"        \"type\": \"boolean\",",
+									"      },",
+									"    },",
+									"    \"required\": [\"success\"]",
+									"  };",
+									"",
+									"  const validationResult = ajv.validate(schema, responseBody);",
+									"  if (!validationResult) {",
+									"    console.error(ajv.errors);",
+									"    pm.expect.fail(\"Response body schema validation failed, check console for more details\");",
+									"  }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "10497157-c0c09ddb-d865-4cf2-b11d-d547531b9162",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-socket-id",
+								"value": "{{socketId}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service\": \"akita\",\n    \"method\": \"POST\",\n    \"path\": \"/v2/services/unsubscribe\",\n    \"body\": {\n        \"service_id\": [\n            \"{{serviceId}}\"\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "10497157-a0a099cb-92b9-4193-9e55-85b355b1bd1e"
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{accessToken}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "x-access-token",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "ce1b118b-c7a8-4028-afcc-05073923c71d",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "14a2ab46-800d-4cd2-98e2-23878a71eba2",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "accessToken",
+			"value": "76794af1963d85f4ac90b6363777c1bd862696ba073fde7654bd2d8db90b8997fe17386e85b3c13648a9754ed2eb8770a71643696f3a83440e951e9a41dcbaab"
+		},
+		{
+			"key": "baseUrl",
+			"value": "https://postman.postman-beta.co/_api/ws/proxy"
+		},
+		{
+			"key": "collectionId",
+			"value": "1061965-1b820ab2-c1c7-4365-8ef6-7fdb2523ec0e"
+		},
+		{
+			"key": "serviceId",
+			"value": "svc_75Vyb3XzpCkJmZcC4py2QE"
+		},
+		{
+			"key": "workspaceId",
+			"value": "47d1b387-2485-482a-bf62-46ddd70a6d1e"
+		},
+		{
+			"key": "show_ip_hosts",
+			"value": "false"
+		},
+		{
+			"key": "path_param_id",
+			"value": "ppx_7BOqUuzcWnl6Mu1r204btF"
+		},
+		{
+			"key": "nonexistentCollectionId",
+			"value": "11111111-deadbeef-3333-4444-5555-666677778888"
+		},
+		{
+			"key": "timestamp",
+			"value": ""
+		},
+		{
+			"key": "witness_token",
+			"value": ""
+		},
+		{
+			"key": "startTime",
+			"value": ""
+		},
+		{
+			"key": "endTime",
+			"value": ""
+		},
+		{
+			"key": "socketId",
+			"value": "oeDPyog2VvIg2NUhmnMfJQ",
+			"type": "string"
+		},
+		{
+			"key": "nonexistentServiceId",
+			"value": "svc_0N159iYkn52h2h3IKt501Q",
+			"type": "string"
+		},
+		{
+			"key": "inaccessibleWorkspaceId",
+			"value": "4c4c28b1-3c12-4577-888c-5a0550cd5de9",
+			"type": "string"
+		},
+		{
+			"key": "inaccessibleServiceId",
+			"value": "svc_4xVQHFKYwJjw50F2gk457r",
+			"type": "string"
+		},
+		{
+			"key": "newVar",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}
