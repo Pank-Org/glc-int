@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "485132-bda82c51-dd52-40ce-9176-cff408fd7f30",
-		"name": "New Collection",
+		"name": "[gitV1] New Collection",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -19,12 +19,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"service-beta1\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/tree\",\n    \"query\": {\n        \"fields\": \"con\"\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"service-beta1\": \"specification\",\n    \"method\": \"get\",\n    \"path\": \"/specifications/{{specificationId1}}/tree\",\n    \"query\": {\n        \"fields\": \"con\"\n    }\n}"
 						},
 						"url": {
 							"raw": "www.google.com",
