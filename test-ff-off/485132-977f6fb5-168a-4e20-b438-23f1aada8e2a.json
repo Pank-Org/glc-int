@@ -70,6 +70,34 @@
 					"cookie": [],
 					"responseTime": null,
 					"body": null
+				},
+				{
+					"id": "485132-c9ff12a7-6823-4710-aec4-6db93ea0671f",
+					"name": "Get data",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/info?id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"info"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"responseTime": null,
+					"body": null
 				}
 			]
 		},
