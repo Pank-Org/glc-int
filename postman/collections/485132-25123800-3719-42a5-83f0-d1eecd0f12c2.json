@@ -10,6 +10,11 @@
 			"name": "New Folder",
 			"item": [
 				{
+					"name": "New Folder",
+					"item": [],
+					"id": "485132-7dc0b1c7-a3d2-4389-a66a-c85e4cb34845"
+				},
+				{
 					"name": "New Request",
 					"id": "485132-5485977f-4a55-432b-9901-5afa2858195a",
 					"protocolProfileBehavior": {
