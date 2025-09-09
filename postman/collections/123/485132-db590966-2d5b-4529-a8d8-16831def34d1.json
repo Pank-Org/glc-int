@@ -7,6 +7,24 @@
 	},
 	"item": [
 		{
+			"name": "New Folder",
+			"item": [
+				{
+					"name": "New Request",
+					"id": "485132-3535688d-680f-43bf-83c2-c3e7293ef449",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			],
+			"id": "485132-da27e3a0-fa03-49ad-9197-0af7f53f1f6d"
+		},
+		{
 			"name": "Get data",
 			"event": [
 				{
