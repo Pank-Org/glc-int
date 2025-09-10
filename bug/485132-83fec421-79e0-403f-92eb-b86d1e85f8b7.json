@@ -7,6 +7,24 @@
 	},
 	"item": [
 		{
+			"name": "New Folder",
+			"item": [
+				{
+					"name": "New Request",
+					"id": "485132-6131a514-967b-4f1d-95fd-6323f0bc400e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			],
+			"id": "485132-969d5e2f-8cf8-47df-b8fb-9cea29f805eb"
+		},
+		{
 			"name": "Create mock user",
 			"id": "485132-11fcb0c7-c65f-4410-baf5-33fe252e7809",
 			"request": {
