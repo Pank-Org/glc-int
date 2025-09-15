@@ -103,6 +103,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
+				"id": "96f930d3-6964-4e15-a3d3-ab2235e5cac8",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -112,6 +113,7 @@
 		{
 			"listen": "test",
 			"script": {
+				"id": "f7423b86-8268-476e-b32f-360c5328264e",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -121,14 +123,17 @@
 	],
 	"variable": [
 		{
-			"id": "2dce9a84-bb3b-409d-ba85-a53a3432a63e",
 			"key": "token",
 			"value": ""
 		},
 		{
-			"id": "eaff7dc7-7d68-4d25-889f-f544659f4dc8",
 			"key": "baseUrl",
 			"value": "https://ff7f396c-8508-403e-9027-f091862711be.mock.pstmn.io"
+		},
+		{
+			"key": "vb vlvbmlml",
+			"value": "",
+			"type": "default"
 		}
 	]
 }
