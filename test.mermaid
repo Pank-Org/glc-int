@@ -1,0 +1,50 @@
+flowchart TD
+    IN([Synapse Event]) --> SEC
+
+    SEC["SynapseEventController\nvalidate · normalize"] --> FFR
+
+    FFR{"FeatureFlagRouter\nper-event flag"}
+    FFR -->|legacy| LEG[Legacy Handler]
+    FFR -->|shadow| SHD["Shadow Mode\nboth paths run · legacy result sent"]
+    FFR -->|config| ECR
+
+    ECR["EventConfigRegistry\nlookup(eventName)"]
+    ECR -->|not active| SKIP(["silent skip"])
+    ECR -->|active| ENRICHERS
+
+    subgraph EP["Enrichment Pipeline"]
+        direction TB
+        ENRICHERS["Built-in enrichers\norder 1 ── fetchActor · fetchWorkspace · fetchEntity\norder 2 ── fetchChangelog · fetchPullRequest · …\nparallel within same order value"]
+        CR{"Custom Resolver\nconfigured?"}
+        RES["POST resolver endpoint\nmerge response → context.custom only\nfallback_on_error skips on failure"]
+        ENRICHERS --> CR
+        CR -->|yes| RES
+    end
+
+    RES --> SFO
+    CR -->|no| SFO
+
+    SFO["SubscriptionFanOut\nfind active subscriptions for workspaceId × eventName\nfilter by subscriptionConfig.enabled · group by platform"]
+    TS["TemplateStore\nget(eventConfigId, platform)"]
+    TR["TemplateRenderer\nHandlebars.compile(template)(enrichmentContext)"]
+    SFO --> TS --> TR
+
+    subgraph PL["Platform Delivery"]
+        PD["PlatformDelivery\nchannel validation · retries · error tracking"]
+        SL(["Slack"])
+        TM(["MS Teams"])
+        PD --> SL
+        PD --> TM
+    end
+
+    TR --> PD
+
+    subgraph CACHE["Cache Layer"]
+        L1[("L1 Process LRU\n~50 entries · 60s TTL · per pod")]
+        L2[("L2 Redis\nshared · 10min TTL")]
+        DB[("MySQL\nsource of truth")]
+        L1 -. miss .-> L2 -. miss .-> DB
+    end
+
+    ECR <-. lookup / pub-sub invalidation .-> L1
+    TS <-. lookup .-> L2
